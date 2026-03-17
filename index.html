@@ -28,15 +28,18 @@
     </header>
 
     <div class="layout-container">
-      <nav class="sidebar pixel-border">
+      <!-- sidebar：主管事務鈕加 nav-btn-mgr（變動） -->
+      <nav class="sidebar pixel-border" id="main-sidebar">
         <button class="nav-btn" id="btn-tab-main" onclick="switchTab('tab-main')" style="display:none;">儀表板<br><small>(Dashboard)</small></button>
         <button class="nav-btn active" id="btn-tab-issues" onclick="switchTab('tab-issues')">問題資料庫<br><small>(Issues)</small></button>
-        <button class="nav-btn" id="btn-tab-manager" onclick="switchTab('tab-manager')" style="display:none; color: #ffb7c5;">主管事務管理<br><small>(Manager)</small></button>
+        <button class="nav-btn nav-btn-mgr" id="btn-tab-manager" onclick="switchTab('tab-manager')" style="display:none;">主管事務管理<br><small>(Manager)</small></button>
         <div style="flex:1"></div>
         <button class="nav-btn logout-btn" onclick="window.location.href=window.location.pathname">登出系統</button>
       </nav>
 
       <main class="main-content">
+
+        <!-- 儀表板（無變動） -->
         <div id="tab-main" class="tab-section" style="display:none;">
           <div class="dashboard-grid">
             <div class="stats-container pixel-border">
@@ -64,35 +67,123 @@
           </div>
         </div>
 
+        <!-- 問題資料庫（無變動） -->
         <div id="tab-issues" class="tab-section">
           <div class="control-panel pixel-border">
             <input type="text" id="search-input" class="pixel-input mini-search" placeholder="關鍵字搜尋..." oninput="renderIssues()">
-            <div class="filter-group">
-              <div class="custom-select"><div class="select-selected pixel-input" onclick="toggleDropdown('items-owner', event)">負責人 ▾</div><div class="select-items pixel-border" id="items-owner" style="display:none;"></div></div>
-              <div class="custom-select"><div class="select-selected pixel-input" onclick="toggleDropdown('items-status', event)">狀態 ▾</div><div class="select-items pixel-border" id="items-status" style="display:none;"></div></div>
-              <div class="custom-select"><div class="select-selected pixel-input" onclick="toggleDropdown('items-product', event)">產品別 ▾</div><div class="select-items pixel-border" id="items-product" style="display:none;"></div></div>
+            <div class="filter-group filter-grid">
+              <div class="custom-select">
+                <div class="select-selected pixel-input" onclick="toggleDropdown('items-owner', event)">負責人 ▾</div>
+                <div class="select-items pixel-border" id="items-owner" style="display:none;">
+                  <input type="text" class="pixel-input filter-search-input" placeholder="搜尋..." oninput="filterDropdownSearch(this, 'items-owner')" onclick="event.stopPropagation()">
+                  <div class="filter-action-btns">
+                    <button class="filter-action-btn" onclick="selectAllFilter('items-owner','renderIssues()',event)">全選</button>
+                    <button class="filter-action-btn" onclick="clearAllFilter('items-owner','renderIssues()',event)">清除</button>
+                  </div>
+                  <div class="checkbox-list" id="items-owner-list"></div>
+                </div>
+              </div>
+              <div class="custom-select">
+                <div class="select-selected pixel-input" onclick="toggleDropdown('items-status', event)">狀態 ▾</div>
+                <div class="select-items pixel-border" id="items-status" style="display:none;">
+                  <input type="text" class="pixel-input filter-search-input" placeholder="搜尋..." oninput="filterDropdownSearch(this, 'items-status')" onclick="event.stopPropagation()">
+                  <div class="filter-action-btns">
+                    <button class="filter-action-btn" onclick="selectAllFilter('items-status','renderIssues()',event)">全選</button>
+                    <button class="filter-action-btn" onclick="clearAllFilter('items-status','renderIssues()',event)">清除</button>
+                  </div>
+                  <div class="checkbox-list" id="items-status-list"></div>
+                </div>
+              </div>
+              <div class="custom-select">
+                <div class="select-selected pixel-input" onclick="toggleDropdown('items-product', event)">產品別 ▾</div>
+                <div class="select-items pixel-border" id="items-product" style="display:none;">
+                  <input type="text" class="pixel-input filter-search-input" placeholder="搜尋..." oninput="filterDropdownSearch(this, 'items-product')" onclick="event.stopPropagation()">
+                  <div class="filter-action-btns">
+                    <button class="filter-action-btn" onclick="selectAllFilter('items-product','renderIssues()',event)">全選</button>
+                    <button class="filter-action-btn" onclick="clearAllFilter('items-product','renderIssues()',event)">清除</button>
+                  </div>
+                  <div class="checkbox-list" id="items-product-list"></div>
+                </div>
+              </div>
+              <div class="custom-select">
+                <div class="select-selected pixel-input" onclick="toggleDropdown('items-customer', event)">客戶別 ▾</div>
+                <div class="select-items pixel-border" id="items-customer" style="display:none;">
+                  <input type="text" class="pixel-input filter-search-input" placeholder="搜尋..." oninput="filterDropdownSearch(this, 'items-customer')" onclick="event.stopPropagation()">
+                  <div class="filter-action-btns">
+                    <button class="filter-action-btn" onclick="selectAllFilter('items-customer','renderIssues()',event)">全選</button>
+                    <button class="filter-action-btn" onclick="clearAllFilter('items-customer','renderIssues()',event)">清除</button>
+                  </div>
+                  <div class="checkbox-list" id="items-customer-list"></div>
+                </div>
+              </div>
             </div>
             <button class="pixel-btn btn-add" onclick="openModal('TS')">+ 新增</button>
           </div>
           <div class="todo-grid" id="issue-display"></div>
         </div>
 
-        <div id="tab-manager" class="tab-section" style="display:none;">
+        <!-- 主管事務（變動：加 ppg-tab class + ppg-watermark div） -->
+        <div id="tab-manager" class="tab-section ppg-tab" style="display:none;">
+          <div class="ppg-watermark" aria-hidden="true"></div>
+
           <div class="control-panel pixel-border panel-manager">
             <input type="text" id="search-input-mgr" class="pixel-input mini-search mgr-text" placeholder="管理事項搜尋..." oninput="renderManagerIssues()">
-            <div class="filter-group">
-              <div class="custom-select"><div class="select-selected pixel-input mgr-text" onclick="toggleDropdown('mgr-owner', event)">負責人 ▾</div><div class="select-items pixel-border" id="mgr-owner" style="display:none;"></div></div>
-              <div class="custom-select"><div class="select-selected pixel-input mgr-text" onclick="toggleDropdown('mgr-status', event)">狀態 ▾</div><div class="select-items pixel-border" id="mgr-status" style="display:none;"></div></div>
-              <div class="custom-select"><div class="select-selected pixel-input mgr-text" onclick="toggleDropdown('mgr-product', event)">產品別 ▾</div><div class="select-items pixel-border" id="mgr-product" style="display:none;"></div></div>
+            <div class="filter-group filter-grid">
+              <div class="custom-select">
+                <div class="select-selected pixel-input mgr-text" onclick="toggleDropdown('mgr-owner', event)">負責人 ▾</div>
+                <div class="select-items pixel-border mgr-border" id="mgr-owner" style="display:none;">
+                  <input type="text" class="pixel-input filter-search-input mgr-text" placeholder="搜尋..." oninput="filterDropdownSearch(this,'mgr-owner')" onclick="event.stopPropagation()">
+                  <div class="filter-action-btns">
+                    <button class="filter-action-btn mgr-btn" onclick="selectAllFilter('mgr-owner','renderManagerIssues()',event)">全選</button>
+                    <button class="filter-action-btn mgr-btn" onclick="clearAllFilter('mgr-owner','renderManagerIssues()',event)">清除</button>
+                  </div>
+                  <div class="checkbox-list" id="mgr-owner-list"></div>
+                </div>
+              </div>
+              <div class="custom-select">
+                <div class="select-selected pixel-input mgr-text" onclick="toggleDropdown('mgr-status', event)">狀態 ▾</div>
+                <div class="select-items pixel-border mgr-border" id="mgr-status" style="display:none;">
+                  <input type="text" class="pixel-input filter-search-input mgr-text" placeholder="搜尋..." oninput="filterDropdownSearch(this,'mgr-status')" onclick="event.stopPropagation()">
+                  <div class="filter-action-btns">
+                    <button class="filter-action-btn mgr-btn" onclick="selectAllFilter('mgr-status','renderManagerIssues()',event)">全選</button>
+                    <button class="filter-action-btn mgr-btn" onclick="clearAllFilter('mgr-status','renderManagerIssues()',event)">清除</button>
+                  </div>
+                  <div class="checkbox-list" id="mgr-status-list"></div>
+                </div>
+              </div>
+              <div class="custom-select">
+                <div class="select-selected pixel-input mgr-text" onclick="toggleDropdown('mgr-product', event)">產品別 ▾</div>
+                <div class="select-items pixel-border mgr-border" id="mgr-product" style="display:none;">
+                  <input type="text" class="pixel-input filter-search-input mgr-text" placeholder="搜尋..." oninput="filterDropdownSearch(this,'mgr-product')" onclick="event.stopPropagation()">
+                  <div class="filter-action-btns">
+                    <button class="filter-action-btn mgr-btn" onclick="selectAllFilter('mgr-product','renderManagerIssues()',event)">全選</button>
+                    <button class="filter-action-btn mgr-btn" onclick="clearAllFilter('mgr-product','renderManagerIssues()',event)">清除</button>
+                  </div>
+                  <div class="checkbox-list" id="mgr-product-list"></div>
+                </div>
+              </div>
+              <div class="custom-select">
+                <div class="select-selected pixel-input mgr-text" onclick="toggleDropdown('mgr-customer', event)">客戶別 ▾</div>
+                <div class="select-items pixel-border mgr-border" id="mgr-customer" style="display:none;">
+                  <input type="text" class="pixel-input filter-search-input mgr-text" placeholder="搜尋..." oninput="filterDropdownSearch(this,'mgr-customer')" onclick="event.stopPropagation()">
+                  <div class="filter-action-btns">
+                    <button class="filter-action-btn mgr-btn" onclick="selectAllFilter('mgr-customer','renderManagerIssues()',event)">全選</button>
+                    <button class="filter-action-btn mgr-btn" onclick="clearAllFilter('mgr-customer','renderManagerIssues()',event)">清除</button>
+                  </div>
+                  <div class="checkbox-list" id="mgr-customer-list"></div>
+                </div>
+              </div>
             </div>
             <button class="pixel-btn btn-manager-add-pink" onclick="openModal('MGR')">+ 新增</button>
           </div>
           <div class="todo-grid" id="manager-issue-display"></div>
         </div>
+
       </main>
     </div>
   </div>
 
+  <!-- Modal（無變動） -->
   <div id="modal-overlay" class="modal-overlay">
     <div class="pixel-modal navy-theme" id="modal-container">
       <div class="modal-header-bar"><span id="modal-title">TASK_CONFIGURATION_V7.0</span><span class="pixel-close" onclick="closeModal()">[X]</span></div>
@@ -105,11 +196,32 @@
         <div class="field-grid-4">
           <div class="field-item"><label class="pixel-label label-light-green">Owner</label><select id="input-owner" class="pixel-input" required></select></div>
           <div class="field-item"><label class="pixel-label label-light-green">Status</label><select id="input-status" class="pixel-input" onchange="handleStatusChange()" required></select></div>
-          <div class="field-item"><label class="pixel-label label-light-green">客戶別</label><select id="input-customer" class="pixel-input" required></select></div>
-          <div class="field-item"><label class="pixel-label label-light-green">產品別</label><select id="input-product" class="pixel-input" required></select></div>
+          <div class="field-item">
+            <label class="pixel-label label-light-green">客戶別</label>
+            <div class="searchable-select" id="ss-customer">
+              <input type="text" class="pixel-input ss-input" id="ss-customer-input" placeholder="輸入或選擇..." autocomplete="off" oninput="filterSearchableSelect('ss-customer')" onfocus="openSearchableSelect('ss-customer')" onclick="event.stopPropagation()">
+              <input type="hidden" id="input-customer">
+              <div class="ss-dropdown pixel-border" id="ss-customer-dropdown" style="display:none;"></div>
+            </div>
+          </div>
+          <div class="field-item">
+            <label class="pixel-label label-light-green">產品別</label>
+            <div class="searchable-select" id="ss-product">
+              <input type="text" class="pixel-input ss-input" id="ss-product-input" placeholder="輸入或選擇..." autocomplete="off" oninput="filterSearchableSelect('ss-product')" onfocus="openSearchableSelect('ss-product')" onclick="event.stopPropagation()">
+              <input type="hidden" id="input-product">
+              <div class="ss-dropdown pixel-border" id="ss-product-dropdown" style="display:none;"></div>
+            </div>
+          </div>
         </div>
         <div class="field-grid">
-          <div class="field-item"><label class="pixel-label label-light-green">專案別</label><select id="input-project" class="pixel-input" required></select></div>
+          <div class="field-item">
+            <label class="pixel-label label-light-green">專案別</label>
+            <div class="searchable-select" id="ss-project">
+              <input type="text" class="pixel-input ss-input" id="ss-project-input" placeholder="輸入或選擇..." autocomplete="off" oninput="filterSearchableSelect('ss-project')" onfocus="openSearchableSelect('ss-project')" onclick="event.stopPropagation()">
+              <input type="hidden" id="input-project">
+              <div class="ss-dropdown pixel-border" id="ss-project-dropdown" style="display:none;"></div>
+            </div>
+          </div>
           <div class="field-item"><label class="pixel-label label-light-green">預計完成時間</label><input type="date" id="input-deadline" class="pixel-input date-picker-custom" onclick="this.showPicker()" required></div>
         </div>
         <div class="field-grid-4">
