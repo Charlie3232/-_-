@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>設備研發部 - 問題解決資料庫</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="matrix-bg">
+
+  <div id="login-overlay">
+    <div class="pixel-box login-card anime-border">
+      <div class="pixel-title">NEV_SYSTEM_ACCESS</div>
+      <p class="pixel-text">同步率驗證：請輸入人員密鑰</p>
+      <input type="text" id="login-user" class="pixel-input" placeholder="人員識別碼 (ID)...">
+      <input type="password" id="login-pwd" class="pixel-input" placeholder="ACCESS PASSWORD..." style="margin-top:15px;">
+      <button class="pixel-btn btn-primary" onclick="handleLogin()" style="margin-top:25px; width:100%;">驗證啟動</button>
+    </div>
+  </div>
+
+  <div id="main-ui" style="display:none;">
+    <header class="anime-header">
+      <div class="header-left">
+        <div class="user-info-tag">USER: <span id="current-username">UNKNOWN</span></div>
+        <div class="status-blink">SYSTEM_ONLINE</div>
+      </div>
+      <h1 class="main-title">設備研發部 - 問題解決資料庫</h1>
+    </header>
+
+    <div class="layout-container">
+      <nav class="sidebar anime-border">
+        <button class="nav-btn" id="btn-tab-main" onclick="switchTab('tab-main')" style="display:none;">核心儀表板<br><small>(Admin Stats)</small></button>
+        <button class="nav-btn active" id="btn-tab-issues" onclick="switchTab('tab-issues')">問題資料庫<br><small>(Issue DB)</small></button>
+        <button class="nav-btn" id="btn-tab-manager" onclick="switchTab('tab-manager')" style="display:none; color: #ff0055;">主管特權事務<br><small>(Manager)</small></button>
+        <div style="flex:1"></div>
+        <button class="nav-btn logout-btn" onclick="location.reload()">中斷同步</button>
+      </nav>
+
+      <main class="main-content">
+        <div id="tab-main" class="tab-section" style="display:none;">
+          <div class="stats-container anime-border">
+            <h2 class="section-title">數據同步統計 (DASHBOARD)</h2>
+            <div id="stats-bars"></div>
+          </div>
+        </div>
+
+        <div id="tab-issues" class="tab-section">
+          <div class="control-panel anime-border">
+            <input type="text" id="search-input" class="pixel-input" placeholder="搜尋問題關鍵字..." oninput="renderIssues()">
+            <div class="filter-group">
+              <div class="custom-select"><div class="select-selected pixel-input" onclick="toggleDropdown('items-owner', event)">負責人 ▾</div><div class="select-items anime-border" id="items-owner" style="display:none;"></div></div>
+              <div class="custom-select"><div class="select-selected pixel-input" onclick="toggleDropdown('items-status', event)">狀態 ▾</div><div class="select-items anime-border" id="items-status" style="display:none;"></div></div>
+            </div>
+            <button class="pixel-btn btn-add" onclick="openModal('TS')">+ 登錄問題</button>
+          </div>
+          <div class="todo-grid" id="issue-display"></div>
+        </div>
+
+        <div id="tab-manager" class="tab-section" style="display:none;">
+          <div class="control-panel anime-border" style="border-color: #ff0055;">
+            <input type="text" id="search-input-mgr" class="pixel-input" placeholder="搜尋主管事務..." oninput="renderManagerIssues()">
+            <button class="pixel-btn btn-add" style="background:#ff0055;" onclick="openModal('MGR')">+ 新增事務</button>
+          </div>
+          <div class="todo-grid" id="manager-issue-display"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="modal-overlay" class="modal-overlay">
+    <div class="pixel-modal anime-theme">
+      <div class="modal-header-bar"><span id="modal-title">DATABASE_ENTRY_V1.0</span><span class="pixel-close" onclick="closeModal()">[X]</span></div>
+      <form id="issueForm" class="modal-body">
+        <input type="hidden" id="edit-id">
+        <div class="field-grid-73">
+          <div class="field-item"><label class="pixel-label">Issue (問題描述)</label><input type="text" id="input-issue" class="pixel-input wide highlight-font" required></div>
+          <div class="field-item"><label class="pixel-label">登錄者</label><input type="text" id="input-creator" class="pixel-input wide" readonly style="color:#00ff41; opacity:0.6;"></div>
+        </div>
+        <div class="field-grid-4">
+          <div class="field-item"><label class="pixel-label">Owner</label><select id="input-owner" class="pixel-input" required></select></div>
+          <div class="field-item"><label class="pixel-label">Status</label><select id="input-status" class="pixel-input" required></select></div>
+          <div class="field-item"><label class="pixel-label">客戶別</label><select id="input-customer" class="pixel-input" required></select></div>
+          <div class="field-item"><label class="pixel-label">產品別</label><select id="input-product" class="pixel-input" required></select></div>
+        </div>
+        <div class="field-grid">
+          <div class="field-item"><label class="pixel-label">專案別</label><select id="input-project" class="pixel-input" required></select></div>
+          <div class="field-item"><label class="pixel-label">預計解決日</label><input type="date" id="input-deadline" class="pixel-input date-picker-custom" required></div>
+        </div>
+        <div class="field-grid">
+          <div class="field-item"><label class="pixel-label">問題細節</label><textarea id="input-description" class="pixel-input scroll" rows="6" required></textarea></div>
+          <div class="field-item"><label class="pixel-label">對策記錄</label><textarea id="input-records" class="pixel-input scroll" rows="6" required></textarea></div>
+        </div>
+        <div id="link-group-container">
+            <label class="pixel-label">參考資料連結 <button type="button" class="mini-plus-btn" onclick="addLinkField()">[+]</button></label>
+            <div id="link-group"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btn-delete" class="pixel-btn" style="background:#ff0055; display:none;" onclick="deleteIssue()">[ 刪除紀錄 ]</button>
+          <div style="display:flex; gap:10px; margin-left:auto;">
+            <button type="button" class="pixel-btn" onclick="closeModal()">取消</button>
+            <button type="button" id="submit-btn" class="pixel-btn btn-primary" onclick="submitIssue()">建立完成</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
