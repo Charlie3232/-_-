@@ -1,45 +1,132 @@
 @font-face { font-family: 'Cubic11'; src: url('https://cdn.jsdelivr.net/gh/ACh-K/Cubic-11@main/fonts/ttf/Cubic_11.ttf') format('truetype'); }
 :root {
   --main-font: 'Cubic11', sans-serif;
-  --bg-color: #051405; 
+  --bg-color: #051405;
   --navy-dark: #070d1f;
   --pixel-green: #00ff41;
   --pixel-text-green: #0f0;
-  --pixel-light-green: #aaffaa; 
-  --mgr-pink: #ffb7c5; 
+  --pixel-light-green: #aaffaa;
+  --mgr-pink: #ffb7c5;
+  --mgr-pink-dark: #e0607a;
+  --mgr-pink-shadow: #885566;
 }
 body { background: var(--bg-color); color: #fff; font-family: var(--main-font); margin: 0; overflow-x: hidden; position: relative; }
 .watermark { position: fixed; bottom: 20px; right: 20px; font-size: 70px; color: rgba(0, 255, 65, 0.04); z-index: -1; pointer-events: none; font-weight: bold; }
 
+/* ── 登入（無變動） ── */
 #login-overlay { position: fixed; inset: 0; background: #000; display: flex; justify-content: center; align-items: center; z-index: 10000; }
 .login-card { padding: 50px; border: 6px solid var(--pixel-green); background: #111; text-align: center; box-shadow: 10px 10px 0 #000; max-width: 450px; }
 .btn-login-giant { width: 100%; padding: 25px 0 !important; font-size: 22px !important; border-width: 6px !important; cursor: pointer; }
 
-/* 關鍵字搜尋框加長 */
+/* ── 搜尋框（無變動） ── */
 .mini-search { width: 450px !important; font-size: 14px; }
 
-/* 篩選清單 */
-.custom-select { position: relative; }
-.select-items { 
-  position: absolute; 
-  background: #000; 
-  border: 3px solid var(--pixel-green); 
-  top: 110%; 
-  left: 0; 
-  z-index: 999; 
-  min-width: 220px; 
-  max-height: 350px; 
-  overflow-y: auto; 
-  padding: 12px; 
+/* ── Sidebar 主管事務按鈕（變動：粉色系） ── */
+.nav-btn-mgr {
+  color: var(--mgr-pink) !important;
+  border-color: var(--mgr-pink) !important;
+  background: rgba(255, 183, 197, 0.08) !important;
+}
+.nav-btn-mgr.active {
+  background: var(--mgr-pink) !important;
+  color: #000 !important;
+  border-color: #fff !important;
+}
+/* active 狀態由 switchTab 動態加 active class，需覆蓋預設 .nav-btn.active */
+#btn-tab-manager.active {
+  background: var(--mgr-pink) !important;
+  color: #000 !important;
+  border-color: #fff !important;
+}
+
+/* ════════════════════════════════════════
+   ★ 主管事務 PPG 背景（新增）
+   ════════════════════════════════════════ */
+.ppg-tab {
+  position: relative;
+}
+
+/* 右下角固定背景圖 */
+.ppg-watermark {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 340px;
+  height: 420px;
+  background-image: url('https://pixhost.to/show/6494/705450929_icon_198x278.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: bottom right;
+  opacity: 0.13;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── 篩選 grid 2x2（無變動） ── */
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 10px;
+  align-items: start;
+}
+
+/* ── 篩選下拉容器（無變動） ── */
+.select-items {
+  position: absolute;
+  background: #000;
+  border: 3px solid var(--pixel-green);
+  top: 110%;
+  left: 0;
+  z-index: 999;
+  min-width: 240px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding: 10px;
   box-shadow: 8px 8px 0 rgba(0,0,0,0.8);
+  box-sizing: border-box;
 }
 .select-items::-webkit-scrollbar { width: 8px; }
 .select-items::-webkit-scrollbar-thumb { background: var(--pixel-green); border: 1px solid #000; }
 
+/* ── 篩選搜尋框（無變動） ── */
+.filter-search-input {
+  width: 100% !important;
+  font-size: 13px !important;
+  padding: 7px 10px !important;
+  margin-bottom: 8px;
+  box-sizing: border-box;
+  border-color: #285428 !important;
+}
+
+/* ── 全選/全清按鈕（無變動） ── */
+.filter-action-btns { display: flex; gap: 8px; margin-bottom: 10px; }
+.filter-action-btn {
+  flex: 1;
+  background: #111;
+  color: var(--pixel-green);
+  border: 2px solid var(--pixel-green);
+  font-family: var(--main-font);
+  font-size: 12px;
+  padding: 5px 0;
+  cursor: pointer;
+}
+.filter-action-btn:hover { background: var(--pixel-green); color: #000; }
+
+/* ── MGR 版全選/清除（無變動） ── */
+.mgr-btn { color: var(--mgr-pink) !important; border-color: var(--mgr-pink) !important; }
+.mgr-btn:hover { background: var(--mgr-pink) !important; color: #000 !important; }
+.mgr-border { border-color: var(--mgr-pink) !important; }
+
+/* ── checkbox list（無變動） ── */
+.checkbox-list { max-height: 240px; overflow-y: auto; }
+.checkbox-list::-webkit-scrollbar { width: 6px; }
+.checkbox-list::-webkit-scrollbar-thumb { background: var(--pixel-green); }
+
+/* ── checkbox label（無變動） ── */
 .checkbox-label { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 15px; cursor: pointer; }
 .checkbox-label input[type="checkbox"] { width: 28px; height: 28px; cursor: pointer; accent-color: var(--pixel-green); }
 
-/* 日期選擇圖標 */
+/* ── 日期圖標（無變動） ── */
 input[type="date"]::-webkit-calendar-picker-indicator {
   background-color: var(--pixel-green);
   padding: 5px;
@@ -47,37 +134,43 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border-radius: 3px;
 }
 
-/* [修正] 主管事務分頁按鈕 */
+/* ── Modal 可搜尋下拉（無變動） ── */
+.searchable-select { position: relative; }
+.ss-input { width: 100% !important; }
+.ss-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #000;
+  border: 2px solid var(--pixel-green);
+  z-index: 1100;
+  max-height: 220px;
+  overflow-y: auto;
+  box-shadow: 6px 6px 0 rgba(0,0,0,0.8);
+  box-sizing: border-box;
+}
+.ss-dropdown::-webkit-scrollbar { width: 7px; }
+.ss-dropdown::-webkit-scrollbar-thumb { background: var(--pixel-green); }
+.ss-option { padding: 10px 14px; font-family: var(--main-font); font-size: 14px; color: var(--pixel-green); cursor: pointer; }
+.ss-option:hover { background: var(--pixel-green); color: #000; }
+
+/* ── 主管事務按鈕（無變動） ── */
 .btn-manager-add-pink {
   background: var(--mgr-pink) !important;
   color: #000 !important;
   border: 4px solid #fff !important;
   padding: 8px 25px !important;
-  box-shadow: 4px 4px 0px #885566 !important;
+  box-shadow: 4px 4px 0px var(--mgr-pink-shadow) !important;
   font-weight: bold;
 }
 
-/* [修正] 8-bit 風格 Modal 按鈕 */
-.btn-primary-8bit {
-  background: var(--pixel-green) !important;
-  color: #000 !important;
-  border: 4px solid #fff !important;
-  box-shadow: 5px 5px 0px #005500 !important;
-}
-.btn-secondary-8bit {
-  background: #444 !important;
-  color: #fff !important;
-  border: 4px solid #888 !important;
-  box-shadow: 5px 5px 0px #222222 !important;
-}
-.btn-delete-8bit {
-  background: #ff0055 !important;
-  color: #fff !important;
-  border: 4px solid #fff !important;
-  box-shadow: 5px 5px 0px #80002b !important;
-}
+/* ── 8-bit Modal 按鈕（無變動） ── */
+.btn-primary-8bit { background: var(--pixel-green) !important; color: #000 !important; border: 4px solid #fff !important; box-shadow: 5px 5px 0px #005500 !important; }
+.btn-secondary-8bit { background: #444 !important; color: #fff !important; border: 4px solid #888 !important; box-shadow: 5px 5px 0px #222222 !important; }
+.btn-delete-8bit { background: #ff0055 !important; color: #fff !important; border: 4px solid #fff !important; box-shadow: 5px 5px 0px #80002b !important; }
 
-/* 主管事務視覺樣式 */
+/* ── 主管事務視覺樣式（無變動） ── */
 .mgr-text { color: var(--mgr-pink) !important; border-color: var(--mgr-pink) !important; }
 .panel-manager { border: 2px solid var(--mgr-pink) !important; background: rgba(255, 183, 197, 0.05) !important; }
 .modal-manager-pink { border: 6px solid var(--mgr-pink) !important; }
@@ -88,7 +181,34 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .modal-manager-pink .checkbox-label { color: var(--mgr-pink) !important; }
 .modal-manager-pink .checkbox-label input[type="checkbox"] { accent-color: var(--mgr-pink); }
 .modal-manager-pink input[type="date"]::-webkit-calendar-picker-indicator { background-color: var(--mgr-pink); }
+.modal-manager-pink .ss-dropdown { border-color: var(--mgr-pink) !important; }
+.modal-manager-pink .ss-dropdown::-webkit-scrollbar-thumb { background: var(--mgr-pink); }
+.modal-manager-pink .ss-option { color: var(--mgr-pink); }
+.modal-manager-pink .ss-option:hover { background: var(--mgr-pink); color: #000; }
 
+/* ★ 微調：主管事務（粉色 Modal）輸入框文字改淺灰 */
+.modal-manager-pink .pixel-input,
+.modal-manager-pink .select-selected.pixel-input,
+.modal-manager-pink select.pixel-input,
+.modal-manager-pink textarea.pixel-input {
+  color: #cfcfcf !important;
+}
+.modal-manager-pink .pixel-input::placeholder {
+  color: #a8a8a8;
+  opacity: 1;
+}
+
+/* ★ 微調：主管事務分頁輸入框文字改淺灰（不影響 Issues / Modal） */
+#tab-manager .pixel-input,
+#tab-manager .select-selected.pixel-input {
+  color: #cfcfcf !important;
+}
+#tab-manager .pixel-input::placeholder {
+  color: #a8a8a8;
+  opacity: 1;
+}
+
+/* ── 通用樣式（無變動） ── */
 .label-light-green { color: var(--pixel-light-green) !important; font-weight: bold; font-size: 14px; }
 .pixel-input { background: #000; border: 2px solid #3e4a6d; color: var(--pixel-green); padding: 12px; font-family: var(--main-font); font-size: 18px; outline: none; width: 100%; box-sizing: border-box; }
 
@@ -108,20 +228,14 @@ header { display: flex; justify-content: space-between; align-items: center; wid
 .main-content { flex: 1; overflow-y: auto; padding-right: 10px; }
 .nav-btn { background: #111; color: var(--pixel-green); border: 4px solid #3e4a6d; padding: 15px 10px; cursor: pointer; text-align: center; }
 .nav-btn.active { background: var(--pixel-green); color: #000; border-color: #fff; }
+.logout-btn { background: #111 !important; color: #ff4444 !important; border-color: #ff4444 !important; margin-top: auto; }
 
-/* [修正] 登出鍵視覺 */
-.logout-btn {
-  background: #111 !important;
-  color: #ff4444 !important;
-  border-color: #ff4444 !important;
-  margin-top: auto;
-}
-
-.control-panel { padding: 20px; background: #1a1a1a; display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 25px; border: 2px solid #285428;}
+.custom-select { position: relative; }
+.control-panel { padding: 20px; background: #1a1a1a; display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; margin-bottom: 25px; border: 2px solid #285428; }
 .btn-add { background: var(--pixel-green) !important; color: #000 !important; border: 4px solid #fff !important; font-weight: bold; padding: 8px 25px !important; font-size: 16px !important; cursor: pointer; }
 
 .todo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.pebble { background: #111; border: 4px solid #fff; padding: 25px; min-height: 180px; cursor: pointer; text-align: center; border-color: #285428; transition: 0.2s; position: relative; }
+.pebble { background: #111; border: 4px solid #285428; padding: 25px; min-height: 180px; cursor: pointer; text-align: center; transition: 0.2s; position: relative; }
 .urgent-card { background: rgba(255, 0, 85, 0.15) !important; border: 4px solid #ff0055 !important; box-shadow: inset 0 0 15px #ff0055; }
 .resolved-card { opacity: 0.4; filter: grayscale(1); }
 
@@ -141,4 +255,7 @@ header { display: flex; justify-content: space-between; align-items: center; wid
   .sidebar { width: 100%; flex-direction: row; padding: 10px; overflow-x: auto; flex-wrap: nowrap; border-bottom: 4px solid #3e4a6d; }
   .nav-btn { flex: 0 0 auto; margin: 0 5px; min-width: 80px; }
   .todo-grid { grid-template-columns: 1fr; }
+  .filter-grid { grid-template-columns: 1fr; }
+  .mini-search { width: 100% !important; }
+  .ppg-watermark { width: 200px; height: 260px; }
 }
