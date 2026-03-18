@@ -13,60 +13,58 @@
 body { background: var(--bg-color); color: #fff; font-family: var(--main-font); margin: 0; overflow-x: hidden; position: relative; }
 .watermark { position: fixed; bottom: 20px; right: 20px; font-size: 70px; color: rgba(0, 255, 65, 0.04); z-index: -1; pointer-events: none; font-weight: bold; }
 
-/* ── 登入（無變動） ── */
+/* ── 登入 ── */
 #login-overlay { position: fixed; inset: 0; background: #000; display: flex; justify-content: center; align-items: center; z-index: 10000; }
 .login-card { padding: 50px; border: 6px solid var(--pixel-green); background: #111; text-align: center; box-shadow: 10px 10px 0 #000; max-width: 450px; }
 .btn-login-giant { width: 100%; padding: 25px 0 !important; font-size: 22px !important; border-width: 6px !important; cursor: pointer; }
 
-/* ── 搜尋框（無變動） ── */
+/* ── 搜尋框 ── */
 .mini-search { width: 450px !important; font-size: 14px; }
 
-/* ── Sidebar 主管事務按鈕（粉色系） ── */
-.nav-btn-mgr {
-  color: var(--mgr-pink) !important;
-  border-color: var(--mgr-pink) !important;
-  background: rgba(255, 183, 197, 0.08) !important;
-}
-.nav-btn-mgr.active,
-#btn-tab-manager.active {
-  background: var(--mgr-pink) !important;
-  color: #000 !important;
-  border-color: #fff !important;
-}
+/* ── Sidebar 主管事務按鈕 ── */
+.nav-btn-mgr { color: var(--mgr-pink) !important; border-color: var(--mgr-pink) !important; background: rgba(255,183,197,0.08) !important; }
+.nav-btn-mgr.active, #btn-tab-manager.active { background: var(--mgr-pink) !important; color: #000 !important; border-color: #fff !important; }
 
 /* ════════════════════════════════════════
-   ★ Header GIF（新增）
-   — 預設隱藏，switchTab 切到 tab-manager 時顯示
+   ★ Header GIF
    ════════════════════════════════════════ */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 95%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 15px 10px;
+  border-bottom: 3px solid var(--pixel-green);
+}
 .header-gif-box {
-  display: none;           /* 預設隱藏 */
   flex: 1;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   height: 56px;
   margin: 0 24px;
+  /* display 由 JS 控制 */
 }
 .header-gif {
   height: 56px;
   width: auto;
   image-rendering: pixelated;
   display: block;
+  margin: 0 auto;
 }
 
 /* ════════════════════════════════════════
    ★ 主管事務 PPG 背景
    ════════════════════════════════════════ */
 .ppg-tab { position: relative; }
-
 .ppg-watermark {
   display: none;
   position: fixed;
-  top: 50%;
-  left: 50%;
+  top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 420px;
-  height: 420px;
+  width: 420px; height: 420px;
   background-image: url('pixel_trio_square.jpg');
   background-size: cover;
   background-repeat: no-repeat;
@@ -78,117 +76,63 @@ body { background: var(--bg-color); color: #fff; font-family: var(--main-font); 
 #tab-manager.tab-active .ppg-watermark { display: block; }
 #tab-manager > *:not(.ppg-watermark) { position: relative; z-index: 1; }
 
-/* ── 篩選 grid 2x2（無變動） ── */
-.filter-grid {
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  gap: 10px;
-  align-items: start;
-}
+/* ── 篩選 grid 2x2 ── */
+.filter-grid { display: grid; grid-template-columns: repeat(2, auto); gap: 10px; align-items: start; }
 
-/* ── 篩選下拉容器（無變動） ── */
+/* ── 篩選下拉容器 ── */
 .select-items {
-  position: absolute;
-  background: #000;
-  border: 3px solid var(--pixel-green);
-  top: 110%;
-  left: 0;
-  z-index: 999;
-  min-width: 240px;
-  max-height: 380px;
-  overflow-y: auto;
-  padding: 10px;
-  box-shadow: 8px 8px 0 rgba(0,0,0,0.8);
-  box-sizing: border-box;
+  position: absolute; background: #000; border: 3px solid var(--pixel-green);
+  top: 110%; left: 0; z-index: 999; min-width: 240px; max-height: 380px;
+  overflow-y: auto; padding: 10px; box-shadow: 8px 8px 0 rgba(0,0,0,0.8); box-sizing: border-box;
 }
 .select-items::-webkit-scrollbar { width: 8px; }
 .select-items::-webkit-scrollbar-thumb { background: var(--pixel-green); border: 1px solid #000; }
 
-/* ── 篩選搜尋框（無變動） ── */
-.filter-search-input {
-  width: 100% !important;
-  font-size: 13px !important;
-  padding: 7px 10px !important;
-  margin-bottom: 8px;
-  box-sizing: border-box;
-  border-color: #285428 !important;
-}
+/* ── 篩選搜尋框 ── */
+.filter-search-input { width: 100% !important; font-size: 13px !important; padding: 7px 10px !important; margin-bottom: 8px; box-sizing: border-box; border-color: #285428 !important; }
 
-/* ── 全選/全清按鈕（無變動） ── */
+/* ── 全選/全清按鈕 ── */
 .filter-action-btns { display: flex; gap: 8px; margin-bottom: 10px; }
-.filter-action-btn {
-  flex: 1;
-  background: #111;
-  color: var(--pixel-green);
-  border: 2px solid var(--pixel-green);
-  font-family: var(--main-font);
-  font-size: 12px;
-  padding: 5px 0;
-  cursor: pointer;
-}
+.filter-action-btn { flex: 1; background: #111; color: var(--pixel-green); border: 2px solid var(--pixel-green); font-family: var(--main-font); font-size: 12px; padding: 5px 0; cursor: pointer; }
 .filter-action-btn:hover { background: var(--pixel-green); color: #000; }
 
-/* ── MGR 版全選/清除（無變動） ── */
+/* ── MGR 版全選/清除 ── */
 .mgr-btn { color: var(--mgr-pink) !important; border-color: var(--mgr-pink) !important; }
 .mgr-btn:hover { background: var(--mgr-pink) !important; color: #000 !important; }
 .mgr-border { border-color: var(--mgr-pink) !important; }
 
-/* ── checkbox list（無變動） ── */
+/* ── checkbox list ── */
 .checkbox-list { max-height: 240px; overflow-y: auto; }
 .checkbox-list::-webkit-scrollbar { width: 6px; }
 .checkbox-list::-webkit-scrollbar-thumb { background: var(--pixel-green); }
 
-/* ── checkbox label（無變動） ── */
+/* ── checkbox label ── */
 .checkbox-label { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 15px; cursor: pointer; }
 .checkbox-label input[type="checkbox"] { width: 28px; height: 28px; cursor: pointer; accent-color: var(--pixel-green); }
 
-/* ── 日期圖標（無變動） ── */
-input[type="date"]::-webkit-calendar-picker-indicator {
-  background-color: var(--pixel-green);
-  padding: 5px;
-  cursor: pointer;
-  border-radius: 3px;
-}
+/* ── 日期圖標 ── */
+input[type="date"]::-webkit-calendar-picker-indicator { background-color: var(--pixel-green); padding: 5px; cursor: pointer; border-radius: 3px; }
 
-/* ── Modal 可搜尋下拉（無變動） ── */
+/* ── Modal 可搜尋下拉 ── */
 .searchable-select { position: relative; }
 .ss-input { width: 100% !important; }
-.ss-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  background: #000;
-  border: 2px solid var(--pixel-green);
-  z-index: 1100;
-  max-height: 220px;
-  overflow-y: auto;
-  box-shadow: 6px 6px 0 rgba(0,0,0,0.8);
-  box-sizing: border-box;
-}
+.ss-dropdown { position: absolute; top: 100%; left: 0; width: 100%; background: #000; border: 2px solid var(--pixel-green); z-index: 1100; max-height: 220px; overflow-y: auto; box-shadow: 6px 6px 0 rgba(0,0,0,0.8); box-sizing: border-box; }
 .ss-dropdown::-webkit-scrollbar { width: 7px; }
 .ss-dropdown::-webkit-scrollbar-thumb { background: var(--pixel-green); }
 .ss-option { padding: 10px 14px; font-family: var(--main-font); font-size: 14px; color: var(--pixel-green); cursor: pointer; }
 .ss-option:hover { background: var(--pixel-green); color: #000; }
 
-/* ── 主管事務按鈕（無變動） ── */
-.btn-manager-add-pink {
-  background: var(--mgr-pink) !important;
-  color: #000 !important;
-  border: 4px solid #fff !important;
-  padding: 8px 25px !important;
-  box-shadow: 4px 4px 0px var(--mgr-pink-shadow) !important;
-  font-weight: bold;
-}
+/* ── 主管事務按鈕 ── */
+.btn-manager-add-pink { background: var(--mgr-pink) !important; color: #000 !important; border: 4px solid #fff !important; padding: 8px 25px !important; box-shadow: 4px 4px 0px var(--mgr-pink-shadow) !important; font-weight: bold; }
 
-/* ── 8-bit Modal 按鈕（無變動） ── */
+/* ── 8-bit Modal 按鈕 ── */
 .btn-primary-8bit { background: var(--pixel-green) !important; color: #000 !important; border: 4px solid #fff !important; box-shadow: 5px 5px 0px #005500 !important; }
 .btn-secondary-8bit { background: #444 !important; color: #fff !important; border: 4px solid #888 !important; box-shadow: 5px 5px 0px #222222 !important; }
 .btn-delete-8bit { background: #ff0055 !important; color: #fff !important; border: 4px solid #fff !important; box-shadow: 5px 5px 0px #80002b !important; }
 
-/* ── 主管事務視覺樣式（無變動） ── */
+/* ── 主管事務視覺樣式 ── */
 .mgr-text { color: var(--mgr-pink) !important; border-color: var(--mgr-pink) !important; }
-.panel-manager { border: 2px solid var(--mgr-pink) !important; background: rgba(255, 183, 197, 0.05) !important; }
+.panel-manager { border: 2px solid var(--mgr-pink) !important; background: rgba(255,183,197,0.05) !important; }
 .modal-manager-pink { border: 6px solid var(--mgr-pink) !important; }
 .modal-manager-pink .modal-header-bar { background: var(--mgr-pink) !important; color: #000 !important; }
 .modal-manager-pink .label-light-green { color: #ffd1dc !important; }
@@ -210,30 +154,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 #tab-manager .select-selected.pixel-input { color: #cfcfcf !important; }
 #tab-manager .pixel-input::placeholder { color: #a8a8a8; opacity: 1; }
 
-/* ── 通用樣式（無變動） ── */
+/* ── 通用樣式 ── */
 .label-light-green { color: var(--pixel-light-green) !important; font-weight: bold; font-size: 14px; }
 .pixel-input { background: #000; border: 2px solid #3e4a6d; color: var(--pixel-green); padding: 12px; font-family: var(--main-font); font-size: 18px; outline: none; width: 100%; box-sizing: border-box; }
+.user-display { border: 2px solid var(--pixel-green); padding: 5px 15px; background: rgba(0,255,65,0.1); font-size: 14px; white-space: nowrap; }
 
 .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 10px; }
 .stats-header-wrap { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #285428; padding-bottom: 10px; margin-bottom: 15px; }
 .mini-date { width: 135px !important; font-size: 12px !important; padding: 5px !important; }
-
 .field-grid-73 { display: grid; grid-template-columns: 7.5fr 2.5fr; gap: 20px; margin-bottom: 15px; }
 .field-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 15px; }
 .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 15px; }
-
-/* ★ header 改為相對定位，讓 GIF 能撐開空間 */
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 95%;
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 15px 10px;
-  border-bottom: 3px solid var(--pixel-green);
-}
-.user-display { border: 2px solid var(--pixel-green); padding: 5px 15px; background: rgba(0,255,65,0.1); font-size: 14px; white-space: nowrap; }
 
 .layout-container { display: flex; height: calc(100vh - 85px); width: 95%; max-width: 1600px; margin: 0 auto; gap: 20px; padding: 20px 0; }
 .sidebar { width: 180px; background: rgba(0,0,0,0.5); padding: 20px; display: flex; flex-direction: column; gap: 15px; flex-shrink: 0; }
@@ -248,7 +179,7 @@ header {
 
 .todo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .pebble { background: #111; border: 4px solid #285428; padding: 25px; min-height: 180px; cursor: pointer; text-align: center; transition: 0.2s; position: relative; }
-.urgent-card { background: rgba(255, 0, 85, 0.15) !important; border: 4px solid #ff0055 !important; box-shadow: inset 0 0 15px #ff0055; }
+.urgent-card { background: rgba(255,0,85,0.15) !important; border: 4px solid #ff0055 !important; box-shadow: inset 0 0 15px #ff0055; }
 .resolved-card { opacity: 0.4; filter: grayscale(1); }
 
 .record-item-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
