@@ -39,13 +39,30 @@ body { background: var(--bg-color); color: #fff; font-family: var(--main-font); 
 }
 
 /* ════════════════════════════════════════
+   ★ Header GIF 區塊（新增）
+   ════════════════════════════════════════ */
+.header-gif-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  height: 60px;
+  margin: 0 20px;
+}
+.header-gif {
+  height: 60px;
+  width: auto;
+  image-rendering: pixelated;
+}
+
+/* ════════════════════════════════════════
    ★ 主管事務 PPG 背景
    ════════════════════════════════════════ */
 .ppg-tab {
   position: relative;
 }
 
-/* ★ 正方形置中，預設隱藏，由 JS tab-active 控制顯示 */
 .ppg-watermark {
   display: none;
   position: fixed;
@@ -63,12 +80,10 @@ body { background: var(--bg-color); color: #fff; font-family: var(--main-font); 
   z-index: 0;
 }
 
-/* 切到主管事務頁才顯示 */
 #tab-manager.tab-active .ppg-watermark {
   display: block;
 }
 
-/* 確保主管分頁 UI 在背景圖之上 */
 #tab-manager > *:not(.ppg-watermark) {
   position: relative;
   z-index: 1;
@@ -198,27 +213,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .modal-manager-pink .ss-option { color: var(--mgr-pink); }
 .modal-manager-pink .ss-option:hover { background: var(--mgr-pink); color: #000; }
 
-/* ★ 微調：主管事務（粉色 Modal）輸入框文字改淺灰 */
+/* ★ 主管事務（粉色 Modal）輸入框文字改淺灰 */
 .modal-manager-pink .pixel-input,
 .modal-manager-pink .select-selected.pixel-input,
 .modal-manager-pink select.pixel-input,
-.modal-manager-pink textarea.pixel-input {
-  color: #cfcfcf !important;
-}
-.modal-manager-pink .pixel-input::placeholder {
-  color: #a8a8a8;
-  opacity: 1;
-}
+.modal-manager-pink textarea.pixel-input { color: #cfcfcf !important; }
+.modal-manager-pink .pixel-input::placeholder { color: #a8a8a8; opacity: 1; }
 
-/* ★ 微調：主管事務分頁輸入框文字改淺灰（不影響 Issues / Modal） */
+/* ★ 主管事務分頁輸入框文字改淺灰 */
 #tab-manager .pixel-input,
-#tab-manager .select-selected.pixel-input {
-  color: #cfcfcf !important;
-}
-#tab-manager .pixel-input::placeholder {
-  color: #a8a8a8;
-  opacity: 1;
-}
+#tab-manager .select-selected.pixel-input { color: #cfcfcf !important; }
+#tab-manager .pixel-input::placeholder { color: #a8a8a8; opacity: 1; }
 
 /* ── 通用樣式（無變動） ── */
 .label-light-green { color: var(--pixel-light-green) !important; font-weight: bold; font-size: 14px; }
@@ -270,4 +275,5 @@ header { display: flex; justify-content: space-between; align-items: center; wid
   .filter-grid { grid-template-columns: 1fr; }
   .mini-search { width: 100% !important; }
   .ppg-watermark { width: 280px; height: 280px; }
+  .header-gif-box { display: none; }
 }
