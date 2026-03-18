@@ -371,12 +371,17 @@ function renderManagerIssues() {
 function switchTab(tabId) {
   document.querySelectorAll('.tab-section').forEach(el => {
     el.style.display = 'none';
-    el.classList.remove('tab-active');   // ← 新增
+    el.classList.remove('tab-active');
   });
   document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
   document.getElementById(tabId).style.display = 'block';
-  document.getElementById(tabId).classList.add('tab-active');  // ← 新增
+  document.getElementById(tabId).classList.add('tab-active');
   document.getElementById('btn-' + tabId).classList.add('active');
+
+  // ★ GIF 只在主管事務頁顯示
+  const gifBox = document.getElementById('header-gif-box');
+  if (gifBox) gifBox.style.display = (tabId === 'tab-manager') ? 'flex' : 'none';
+
   if (tabId === 'tab-main') renderStats();
 }
 
