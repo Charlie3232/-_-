@@ -13,7 +13,7 @@
 body { background: var(--bg-color); color: #fff; font-family: var(--main-font); margin: 0; overflow-x: hidden; position: relative; }
 .watermark { position: fixed; bottom: 20px; right: 20px; font-size: 70px; color: rgba(0, 255, 65, 0.04); z-index: -1; pointer-events: none; font-weight: bold; }
 
-/* ── 登入（無變動） ── */
+/* ── 登入 ── */
 #login-overlay { position: fixed; inset: 0; background: #000; display: flex; justify-content: center; align-items: center; z-index: 10000; }
 .login-card { padding: 50px; border: 6px solid var(--pixel-green); background: #111; text-align: center; box-shadow: 10px 10px 0 #000; max-width: 450px; }
 .btn-login-giant { width: 100%; padding: 25px 0 !important; font-size: 22px !important; border-width: 6px !important; cursor: pointer; }
@@ -21,17 +21,13 @@ body { background: var(--bg-color); color: #fff; font-family: var(--main-font); 
 /* ── 搜尋框 ── */
 .mini-search { width: 450px !important; font-size: 14px; }
 
-/* ── Sidebar 主管事務按鈕（粉色系） ── */
+/* ── Sidebar 主管事務按鈕 ── */
 .nav-btn-mgr {
   color: var(--mgr-pink) !important;
   border-color: var(--mgr-pink) !important;
   background: rgba(255, 183, 197, 0.08) !important;
 }
-.nav-btn-mgr.active {
-  background: var(--mgr-pink) !important;
-  color: #000 !important;
-  border-color: #fff !important;
-}
+.nav-btn-mgr.active,
 #btn-tab-manager.active {
   background: var(--mgr-pink) !important;
   color: #000 !important;
@@ -40,31 +36,31 @@ body { background: var(--bg-color); color: #fff; font-family: var(--main-font); 
 
 /* ════════════════════════════════════════
    ★ 主管事務 PPG 背景
+   — position: fixed，但預設 display:none
+   — 由 JS 的 switchTab 控制顯示/隱藏
    ════════════════════════════════════════ */
+.ppg-tab { position: relative; }
 
-/* ppg-tab 必須是 relative，讓 absolute 子層定位正確 */
-.ppg-tab {
-  position: relative;
-  min-height: 100%;
-}
-
-/* ★ 修正：改用 position: absolute，只在主管事務分頁內顯示 */
 .ppg-watermark {
-  position: absolute;
+  display: none;               /* 預設隱藏，JS 切到主管頁時才顯示 */
+  position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('pixel_trio.svg');   /* ← SVG 檔名，與 style.css 放同資料夾 */
+  background-image: url('flying_trio_final.jpg');   /* ← 改成你的 jpg 檔名 */
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center center;
-  opacity: 0.18;
+  opacity: 0.12;
   pointer-events: none;
   z-index: 0;
 }
 
+/* 當 tab-manager 顯示時，讓背景圖也顯示 */
+#tab-manager.tab-active .ppg-watermark {
+  display: block;
+}
+
 /* 確保主管分頁的 UI 都在背景圖之上 */
-#tab-manager > * {
+#tab-manager > *:not(.ppg-watermark) {
   position: relative;
   z-index: 1;
 }
@@ -197,23 +193,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .modal-manager-pink .pixel-input,
 .modal-manager-pink .select-selected.pixel-input,
 .modal-manager-pink select.pixel-input,
-.modal-manager-pink textarea.pixel-input {
-  color: #cfcfcf !important;
-}
-.modal-manager-pink .pixel-input::placeholder {
-  color: #a8a8a8;
-  opacity: 1;
-}
+.modal-manager-pink textarea.pixel-input { color: #cfcfcf !important; }
+.modal-manager-pink .pixel-input::placeholder { color: #a8a8a8; opacity: 1; }
 
 /* ★ 主管事務分頁輸入框文字改淺灰 */
 #tab-manager .pixel-input,
-#tab-manager .select-selected.pixel-input {
-  color: #cfcfcf !important;
-}
-#tab-manager .pixel-input::placeholder {
-  color: #a8a8a8;
-  opacity: 1;
-}
+#tab-manager .select-selected.pixel-input { color: #cfcfcf !important; }
+#tab-manager .pixel-input::placeholder { color: #a8a8a8; opacity: 1; }
 
 /* ── 通用樣式 ── */
 .label-light-green { color: var(--pixel-light-green) !important; font-weight: bold; font-size: 14px; }
@@ -264,5 +250,4 @@ header { display: flex; justify-content: space-between; align-items: center; wid
   .todo-grid { grid-template-columns: 1fr; }
   .filter-grid { grid-template-columns: 1fr; }
   .mini-search { width: 100% !important; }
-  .ppg-watermark { opacity: 0.13; }
 }
