@@ -58,7 +58,13 @@ body { background: var(--bg-color); color: #fff; font-family: var(--main-font); 
   background-position: center;
   opacity: 0.25;
   pointer-events: none;
-  z-index: -1;
+  z-index: 0;
+}
+
+/* 確保主管分頁的 UI 都在背景圖之上 */
+#tab-manager > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* ── 篩選 grid 2x2（無變動） ── */
