@@ -542,7 +542,7 @@ function closeModal() {
 
 async function deleteIssue() {
   const pwd = prompt("確認密碼:");
-  if (pwd !== "13091309" && pwd !== "13321332") return;
+  if (pwd !== "59075364" && pwd !== "13091309") return;
   const id = document.getElementById('edit-id').value;
   isMutating = true;
   await fetch(SCRIPT_URL, {
