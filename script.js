@@ -369,9 +369,13 @@ function renderManagerIssues() {
    toggleDropdown（無變動）
    ════════════════════════════════════════ */
 function switchTab(tabId) {
-  document.querySelectorAll('.tab-section').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.tab-section').forEach(el => {
+    el.style.display = 'none';
+    el.classList.remove('tab-active');   // ← 新增
+  });
   document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
   document.getElementById(tabId).style.display = 'block';
+  document.getElementById(tabId).classList.add('tab-active');  // ← 新增
   document.getElementById('btn-' + tabId).classList.add('active');
   if (tabId === 'tab-main') renderStats();
 }
