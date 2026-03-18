@@ -39,21 +39,24 @@ body { background: var(--bg-color); color: #fff; font-family: var(--main-font); 
 }
 
 /* ════════════════════════════════════════
-   ★ Header GIF 區塊（新增）
+   ★ 主管事務 GIF 橫幅（新增）
    ════════════════════════════════════════ */
-.header-gif-box {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.mgr-gif-bar {
+  width: 100%;
+  height: 80px;
   overflow: hidden;
-  height: 60px;
-  margin: 0 20px;
+  margin-bottom: 16px;
+  border: 2px solid var(--mgr-pink);
+  background: #000;
+  position: relative;
+  z-index: 1;
 }
-.header-gif {
-  height: 60px;
-  width: auto;
+.mgr-gif {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
   image-rendering: pixelated;
+  display: block;
 }
 
 /* ════════════════════════════════════════
@@ -275,5 +278,6 @@ header { display: flex; justify-content: space-between; align-items: center; wid
   .filter-grid { grid-template-columns: 1fr; }
   .mini-search { width: 100% !important; }
   .ppg-watermark { width: 280px; height: 280px; }
-  .header-gif-box { display: none; }
+  .mgr-gif-bar { height: 55px; }
+  .mgr-gif { height: 55px; }
 }
