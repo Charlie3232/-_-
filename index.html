@@ -22,12 +22,9 @@
   </div>
 
   <div id="main-ui" style="display:none;">
-    <!-- ★ 變動：header 加入 GIF 區塊 -->
+    <!-- header（無變動，移除 GIF） -->
     <header>
       <h1 class="pixel-h1">設備研發部 - 問題解決分析庫</h1>
-      <div class="header-gif-box">
-        <img src="flying_girls.gif" alt="" class="header-gif">
-      </div>
       <div class="user-display">USER: <span id="current-username-display">UNKNOWN</span></div>
     </header>
 
@@ -125,9 +122,15 @@
           <div class="todo-grid" id="issue-display"></div>
         </div>
 
-        <!-- 主管事務（無變動） -->
+        <!-- 主管事務（★ 變動：加入 GIF 橫幅） -->
         <div id="tab-manager" class="tab-section ppg-tab" style="display:none;">
           <div class="ppg-watermark" aria-hidden="true"></div>
+
+          <!-- ★ 新增：GIF 飛行橫幅，只在此分頁顯示 -->
+          <div class="mgr-gif-bar">
+            <img src="flying_girls.gif" alt="" class="mgr-gif">
+          </div>
+
           <div class="control-panel pixel-border panel-manager">
             <input type="text" id="search-input-mgr" class="pixel-input mini-search mgr-text" placeholder="管理事項搜尋..." oninput="renderManagerIssues()">
             <div class="filter-group filter-grid">
