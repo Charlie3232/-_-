@@ -22,10 +22,13 @@
   </div>
 
   <div id="main-ui" style="display:none;">
-    <!-- ★ 變動：header 中間加 GIF，預設隱藏，切到主管事務才出現 -->
     <header>
       <h1 class="pixel-h1">設備研發部 - 問題解決分析庫</h1>
-      <div class="header-gif-box" id="header-gif-box">
+      <!-- GIF 區：tab-issues 顯示 team_wave，tab-manager 顯示 flying_girls -->
+      <div class="header-gif-box" id="header-gif-issues" style="display:none;">
+        <img src="team_wave.gif" alt="" class="header-gif">
+      </div>
+      <div class="header-gif-box" id="header-gif-manager" style="display:none;">
         <img src="flying_girls.gif" alt="" class="header-gif">
       </div>
       <div class="user-display">USER: <span id="current-username-display">UNKNOWN</span></div>
@@ -42,7 +45,7 @@
 
       <main class="main-content">
 
-        <!-- 儀表板（無變動） -->
+        <!-- 儀表板 -->
         <div id="tab-main" class="tab-section" style="display:none;">
           <div class="dashboard-grid">
             <div class="stats-container pixel-border">
@@ -70,7 +73,7 @@
           </div>
         </div>
 
-        <!-- 問題資料庫（無變動） -->
+        <!-- 問題資料庫 -->
         <div id="tab-issues" class="tab-section">
           <div class="control-panel pixel-border">
             <input type="text" id="search-input" class="pixel-input mini-search" placeholder="關鍵字搜尋..." oninput="renderIssues()">
@@ -125,7 +128,7 @@
           <div class="todo-grid" id="issue-display"></div>
         </div>
 
-        <!-- 主管事務（無變動） -->
+        <!-- 主管事務 -->
         <div id="tab-manager" class="tab-section ppg-tab" style="display:none;">
           <div class="ppg-watermark" aria-hidden="true"></div>
           <div class="control-panel pixel-border panel-manager">
@@ -185,7 +188,7 @@
     </div>
   </div>
 
-  <!-- Modal（無變動） -->
+  <!-- Modal -->
   <div id="modal-overlay" class="modal-overlay">
     <div class="pixel-modal navy-theme" id="modal-container">
       <div class="modal-header-bar"><span id="modal-title">TASK_CONFIGURATION_V7.0</span><span class="pixel-close" onclick="closeModal()">[X]</span></div>
