@@ -27,11 +27,7 @@ body { background: var(--bg-color); color: #fff; font-family: var(--main-font); 
   border-color: var(--mgr-pink) !important;
   background: rgba(255, 183, 197, 0.08) !important;
 }
-.nav-btn-mgr.active {
-  background: var(--mgr-pink) !important;
-  color: #000 !important;
-  border-color: #fff !important;
-}
+.nav-btn-mgr.active,
 #btn-tab-manager.active {
   background: var(--mgr-pink) !important;
   color: #000 !important;
@@ -39,22 +35,21 @@ body { background: var(--bg-color); color: #fff; font-family: var(--main-font); 
 }
 
 /* ════════════════════════════════════════
-   ★ 主管事務 GIF 橫幅（新增）
+   ★ Header GIF（新增）
+   — 預設隱藏，switchTab 切到 tab-manager 時顯示
    ════════════════════════════════════════ */
-.mgr-gif-bar {
-  width: 100%;
-  height: 80px;
+.header-gif-box {
+  display: none;           /* 預設隱藏 */
+  flex: 1;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
-  margin-bottom: 16px;
-  border: 2px solid var(--mgr-pink);
-  background: #000;
-  position: relative;
-  z-index: 1;
+  height: 56px;
+  margin: 0 24px;
 }
-.mgr-gif {
-  width: 100%;
-  height: 80px;
-  object-fit: cover;
+.header-gif {
+  height: 56px;
+  width: auto;
   image-rendering: pixelated;
   display: block;
 }
@@ -62,9 +57,7 @@ body { background: var(--bg-color); color: #fff; font-family: var(--main-font); 
 /* ════════════════════════════════════════
    ★ 主管事務 PPG 背景
    ════════════════════════════════════════ */
-.ppg-tab {
-  position: relative;
-}
+.ppg-tab { position: relative; }
 
 .ppg-watermark {
   display: none;
@@ -82,15 +75,8 @@ body { background: var(--bg-color); color: #fff; font-family: var(--main-font); 
   pointer-events: none;
   z-index: 0;
 }
-
-#tab-manager.tab-active .ppg-watermark {
-  display: block;
-}
-
-#tab-manager > *:not(.ppg-watermark) {
-  position: relative;
-  z-index: 1;
-}
+#tab-manager.tab-active .ppg-watermark { display: block; }
+#tab-manager > *:not(.ppg-watermark) { position: relative; z-index: 1; }
 
 /* ── 篩選 grid 2x2（無變動） ── */
 .filter-grid {
@@ -215,15 +201,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .modal-manager-pink .ss-dropdown::-webkit-scrollbar-thumb { background: var(--mgr-pink); }
 .modal-manager-pink .ss-option { color: var(--mgr-pink); }
 .modal-manager-pink .ss-option:hover { background: var(--mgr-pink); color: #000; }
-
-/* ★ 主管事務（粉色 Modal）輸入框文字改淺灰 */
 .modal-manager-pink .pixel-input,
 .modal-manager-pink .select-selected.pixel-input,
 .modal-manager-pink select.pixel-input,
 .modal-manager-pink textarea.pixel-input { color: #cfcfcf !important; }
 .modal-manager-pink .pixel-input::placeholder { color: #a8a8a8; opacity: 1; }
-
-/* ★ 主管事務分頁輸入框文字改淺灰 */
 #tab-manager .pixel-input,
 #tab-manager .select-selected.pixel-input { color: #cfcfcf !important; }
 #tab-manager .pixel-input::placeholder { color: #a8a8a8; opacity: 1; }
@@ -240,8 +222,18 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .field-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 15px; }
 .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 15px; }
 
-header { display: flex; justify-content: space-between; align-items: center; width: 95%; max-width: 1600px; margin: 0 auto; padding: 15px 10px; border-bottom: 3px solid var(--pixel-green); }
-.user-display { border: 2px solid var(--pixel-green); padding: 5px 15px; background: rgba(0,255,65,0.1); font-size: 14px; }
+/* ★ header 改為相對定位，讓 GIF 能撐開空間 */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 95%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 15px 10px;
+  border-bottom: 3px solid var(--pixel-green);
+}
+.user-display { border: 2px solid var(--pixel-green); padding: 5px 15px; background: rgba(0,255,65,0.1); font-size: 14px; white-space: nowrap; }
 
 .layout-container { display: flex; height: calc(100vh - 85px); width: 95%; max-width: 1600px; margin: 0 auto; gap: 20px; padding: 20px 0; }
 .sidebar { width: 180px; background: rgba(0,0,0,0.5); padding: 20px; display: flex; flex-direction: column; gap: 15px; flex-shrink: 0; }
@@ -278,6 +270,5 @@ header { display: flex; justify-content: space-between; align-items: center; wid
   .filter-grid { grid-template-columns: 1fr; }
   .mini-search { width: 100% !important; }
   .ppg-watermark { width: 280px; height: 280px; }
-  .mgr-gif-bar { height: 55px; }
-  .mgr-gif { height: 55px; }
+  .header-gif-box { display: none !important; }
 }
