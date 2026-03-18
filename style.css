@@ -26,33 +26,45 @@ body { background: var(--bg-color); color: #fff; font-family: var(--main-font); 
 .nav-btn-mgr.active, #btn-tab-manager.active { background: var(--mgr-pink) !important; color: #000 !important; border-color: #fff !important; }
 
 /* ════════════════════════════════════════
-   ★ Header GIF
+   ★ Header — GIF 填滿中間（變動）
    ════════════════════════════════════════ */
 header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   width: 95%;
   max-width: 1600px;
   margin: 0 auto;
-  padding: 15px 10px;
+  padding: 8px 10px;
   border-bottom: 3px solid var(--pixel-green);
+  gap: 16px;
 }
+.pixel-h1 { flex-shrink: 0; margin: 0; font-size: clamp(12px, 1.4vw, 20px); }
+.user-display {
+  flex-shrink: 0;
+  border: 2px solid var(--pixel-green);
+  padding: 5px 15px;
+  background: rgba(0,255,65,0.1);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* ★ GIF 容器：flex:1 撐滿所有剩餘空間 */
 .header-gif-box {
   flex: 1;
-  align-items: center;
-  justify-content: center;
+  min-width: 0;
   overflow: hidden;
-  height: 56px;
-  margin: 0 24px;
-  /* display 由 JS 控制 */
+  height: 64px;
+  display: none;          /* JS 控制顯示 */
+  align-items: stretch;
 }
+/* ★ GIF 圖片：寬度100%填滿，高度100%，object-fit cover */
 .header-gif {
-  height: 56px;
-  width: auto;
+  width: 100%;
+  height: 64px;
+  object-fit: cover;
+  object-position: center;
   image-rendering: pixelated;
   display: block;
-  margin: 0 auto;
 }
 
 /* ════════════════════════════════════════
@@ -96,17 +108,15 @@ header {
 .filter-action-btn { flex: 1; background: #111; color: var(--pixel-green); border: 2px solid var(--pixel-green); font-family: var(--main-font); font-size: 12px; padding: 5px 0; cursor: pointer; }
 .filter-action-btn:hover { background: var(--pixel-green); color: #000; }
 
-/* ── MGR 版全選/清除 ── */
+/* ── MGR 版 ── */
 .mgr-btn { color: var(--mgr-pink) !important; border-color: var(--mgr-pink) !important; }
 .mgr-btn:hover { background: var(--mgr-pink) !important; color: #000 !important; }
 .mgr-border { border-color: var(--mgr-pink) !important; }
 
-/* ── checkbox list ── */
+/* ── checkbox ── */
 .checkbox-list { max-height: 240px; overflow-y: auto; }
 .checkbox-list::-webkit-scrollbar { width: 6px; }
 .checkbox-list::-webkit-scrollbar-thumb { background: var(--pixel-green); }
-
-/* ── checkbox label ── */
 .checkbox-label { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 15px; cursor: pointer; }
 .checkbox-label input[type="checkbox"] { width: 28px; height: 28px; cursor: pointer; accent-color: var(--pixel-green); }
 
@@ -157,7 +167,6 @@ input[type="date"]::-webkit-calendar-picker-indicator { background-color: var(--
 /* ── 通用樣式 ── */
 .label-light-green { color: var(--pixel-light-green) !important; font-weight: bold; font-size: 14px; }
 .pixel-input { background: #000; border: 2px solid #3e4a6d; color: var(--pixel-green); padding: 12px; font-family: var(--main-font); font-size: 18px; outline: none; width: 100%; box-sizing: border-box; }
-.user-display { border: 2px solid var(--pixel-green); padding: 5px 15px; background: rgba(0,255,65,0.1); font-size: 14px; white-space: nowrap; }
 
 .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 10px; }
 .stats-header-wrap { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #285428; padding-bottom: 10px; margin-bottom: 15px; }
