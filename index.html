@@ -24,7 +24,6 @@
   <div id="main-ui" style="display:none;">
     <header>
       <h1 class="pixel-h1">設備研發部 - 問題解決分析庫</h1>
-      <!-- GIF 區：tab-issues 顯示 team_wave，tab-manager 顯示 flying_girls -->
       <div class="header-gif-box" id="header-gif-issues" style="display:none;">
         <img src="team_wave.gif" alt="" class="header-gif">
       </div>
@@ -38,6 +37,7 @@
       <nav class="sidebar pixel-border" id="main-sidebar">
         <button class="nav-btn" id="btn-tab-main" onclick="switchTab('tab-main')" style="display:none;">儀表板<br><small>(Dashboard)</small></button>
         <button class="nav-btn active" id="btn-tab-issues" onclick="switchTab('tab-issues')">問題資料庫<br><small>(Issues)</small></button>
+        <button class="nav-btn nav-btn-keyword" id="btn-tab-keyword" onclick="switchTab('tab-keyword')">重工改善<br><small>關鍵詞彙庫</small></button>
         <button class="nav-btn nav-btn-mgr" id="btn-tab-manager" onclick="switchTab('tab-manager')" style="display:none;">主管事務管理<br><small>(Manager)</small></button>
         <div style="flex:1"></div>
         <button class="nav-btn logout-btn" onclick="window.location.href=window.location.pathname">登出系統</button>
@@ -128,6 +128,82 @@
           <div class="todo-grid" id="issue-display"></div>
         </div>
 
+        <!-- 重工資料庫 -->
+        <div id="tab-keyword" class="tab-section" style="display:none;">
+          <div class="keyword-db-layout">
+            <!-- 左側：關鍵字池塘 -->
+            <div class="keyword-pool-panel pixel-border">
+              <div class="keyword-pool-title">[ 關鍵字資料庫 ]</div>
+
+              <!-- 四大類 -->
+              <div class="kw-category" id="kwcat-industry">
+                <div class="kw-cat-header kw-cat-industry" onclick="toggleKwCategory('industry')">
+                  ▶ 產業範疇
+                  <span class="kw-cat-badge" id="kwbadge-industry">0</span>
+                </div>
+                <div class="kw-cat-body" id="kwbody-industry" style="display:none;">
+                  <!-- 小項單選 -->
+                  <div class="kw-subcat-tabs" id="kwtabs-industry"></div>
+                  <!-- 內容 pool -->
+                  <div class="kw-tag-pool" id="kwpool-industry"></div>
+                </div>
+              </div>
+
+              <div class="kw-category" id="kwcat-system">
+                <div class="kw-cat-header kw-cat-system" onclick="toggleKwCategory('system')">
+                  ▶ 系統類別
+                  <span class="kw-cat-badge" id="kwbadge-system">0</span>
+                </div>
+                <div class="kw-cat-body" id="kwbody-system" style="display:none;">
+                  <div class="kw-subcat-tabs" id="kwtabs-system"></div>
+                  <div class="kw-tag-pool" id="kwpool-system"></div>
+                </div>
+              </div>
+
+              <div class="kw-category" id="kwcat-hardware">
+                <div class="kw-cat-header kw-cat-hardware" onclick="toggleKwCategory('hardware')">
+                  ▶ 硬件組成
+                  <span class="kw-cat-badge" id="kwbadge-hardware">0</span>
+                </div>
+                <div class="kw-cat-body" id="kwbody-hardware" style="display:none;">
+                  <div class="kw-subcat-tabs" id="kwtabs-hardware"></div>
+                  <div class="kw-tag-pool" id="kwpool-hardware"></div>
+                </div>
+              </div>
+
+              <div class="kw-category" id="kwcat-spec">
+                <div class="kw-cat-header kw-cat-spec" onclick="toggleKwCategory('spec')">
+                  ▶ 技術規範
+                  <span class="kw-cat-badge" id="kwbadge-spec">0</span>
+                </div>
+                <div class="kw-cat-body" id="kwbody-spec" style="display:none;">
+                  <div class="kw-subcat-tabs" id="kwtabs-spec"></div>
+                  <div class="kw-tag-pool" id="kwpool-spec"></div>
+                </div>
+              </div>
+
+              <!-- 已選標籤 -->
+              <div class="kw-selected-bar" id="kw-selected-bar" style="display:none;">
+                <div class="kw-selected-title">已選關鍵字：</div>
+                <div class="kw-selected-tags" id="kw-selected-tags"></div>
+                <button class="pixel-btn kw-clear-btn" onclick="clearAllKeywords()">清除全部</button>
+              </div>
+            </div>
+
+            <!-- 右側：Issue 列表 -->
+            <div class="keyword-result-panel">
+              <div class="keyword-result-header">
+                <span class="pixel-label label-light-green" id="kw-result-count">[ 請選擇關鍵字 ]</span>
+              </div>
+              <div class="todo-grid" id="keyword-issue-display">
+                <div style="grid-column:1/-1; text-align:center; color:#285428; padding:60px; font-size:14px;">
+                  ← 從左側選擇關鍵字來篩選 Issue
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- 主管事務 -->
         <div id="tab-manager" class="tab-section ppg-tab" style="display:none;">
           <div class="ppg-watermark" aria-hidden="true"></div>
@@ -188,61 +264,128 @@
     </div>
   </div>
 
-  <!-- Modal -->
+  <!-- 主 Modal -->
   <div id="modal-overlay" class="modal-overlay">
     <div class="pixel-modal navy-theme" id="modal-container">
       <div class="modal-header-bar"><span id="modal-title">TASK_CONFIGURATION_V7.0</span><span class="pixel-close" onclick="closeModal()">[X]</span></div>
-      <form id="issueForm" class="modal-body">
+      <form id="issueForm" class="modal-body" novalidate>
         <input type="hidden" id="edit-id">
         <div class="field-grid-73">
-          <div class="field-item"><label class="pixel-label label-light-green">Issue</label><input type="text" id="input-issue" class="pixel-input wide highlight-font" required></div>
-          <div class="field-item"><label class="pixel-label label-light-green">建立日期</label><input type="text" id="input-created-date" class="pixel-input wide" readonly style="opacity:0.6;"></div>
+          <div class="field-item">
+            <label class="pixel-label label-light-green">Issue <span class="required-mark">*</span></label>
+            <input type="text" id="input-issue" class="pixel-input wide highlight-font" required>
+          </div>
+          <div class="field-item">
+            <label class="pixel-label label-light-green">建立日期</label>
+            <input type="text" id="input-created-date" class="pixel-input wide" readonly style="opacity:0.6;">
+          </div>
         </div>
         <div class="field-grid-4">
-          <div class="field-item"><label class="pixel-label label-light-green">Owner</label><select id="input-owner" class="pixel-input" required></select></div>
-          <div class="field-item"><label class="pixel-label label-light-green">Status</label><select id="input-status" class="pixel-input" onchange="handleStatusChange()" required></select></div>
           <div class="field-item">
-            <label class="pixel-label label-light-green">客戶別</label>
+            <label class="pixel-label label-light-green">Owner <span class="required-mark">*</span></label>
+            <select id="input-owner" class="pixel-input" required></select>
+          </div>
+          <div class="field-item">
+            <label class="pixel-label label-light-green">Status <span class="required-mark">*</span></label>
+            <select id="input-status" class="pixel-input" onchange="handleStatusChange()" required></select>
+          </div>
+          <div class="field-item">
+            <label class="pixel-label label-light-green">客戶別 <span class="required-mark">*</span></label>
             <div class="searchable-select" id="ss-customer">
               <input type="text" class="pixel-input ss-input" id="ss-customer-input" placeholder="輸入或選擇..." autocomplete="off" oninput="filterSearchableSelect('ss-customer')" onfocus="openSearchableSelect('ss-customer')" onclick="event.stopPropagation()">
-              <input type="hidden" id="input-customer">
+              <input type="hidden" id="input-customer" required>
               <div class="ss-dropdown pixel-border" id="ss-customer-dropdown" style="display:none;"></div>
             </div>
           </div>
           <div class="field-item">
-            <label class="pixel-label label-light-green">產品別</label>
+            <label class="pixel-label label-light-green">產品別 <span class="required-mark">*</span></label>
             <div class="searchable-select" id="ss-product">
               <input type="text" class="pixel-input ss-input" id="ss-product-input" placeholder="輸入或選擇..." autocomplete="off" oninput="filterSearchableSelect('ss-product')" onfocus="openSearchableSelect('ss-product')" onclick="event.stopPropagation()">
-              <input type="hidden" id="input-product">
+              <input type="hidden" id="input-product" required>
               <div class="ss-dropdown pixel-border" id="ss-product-dropdown" style="display:none;"></div>
             </div>
           </div>
         </div>
         <div class="field-grid">
           <div class="field-item">
-            <label class="pixel-label label-light-green">專案別</label>
+            <label class="pixel-label label-light-green">專案別 <span class="required-mark">*</span></label>
             <div class="searchable-select" id="ss-project">
               <input type="text" class="pixel-input ss-input" id="ss-project-input" placeholder="輸入或選擇..." autocomplete="off" oninput="filterSearchableSelect('ss-project')" onfocus="openSearchableSelect('ss-project')" onclick="event.stopPropagation()">
-              <input type="hidden" id="input-project">
+              <input type="hidden" id="input-project" required>
               <div class="ss-dropdown pixel-border" id="ss-project-dropdown" style="display:none;"></div>
             </div>
           </div>
-          <div class="field-item"><label class="pixel-label label-light-green">預計完成時間</label><input type="date" id="input-deadline" class="pixel-input date-picker-custom" onclick="this.showPicker()" required></div>
+          <div class="field-item">
+            <label class="pixel-label label-light-green">預計完成時間 <span class="required-mark">*</span></label>
+            <input type="date" id="input-deadline" class="pixel-input date-picker-custom" onclick="this.showPicker()" required>
+          </div>
         </div>
         <div class="field-grid-4">
-          <div class="field-item" style="grid-column: span 2;"><label class="pixel-label label-light-green">優先級</label><select id="input-priority" class="pixel-input" required><option value="" disabled selected>請選擇...</option><option value="1_高">高</option><option value="2_一般">一般</option><option value="3_低">低</option></select></div>
-          <div class="field-item" style="grid-column: span 2;"><label class="pixel-label label-light-green">實際結案日</label><input type="date" id="input-actual-closed" class="pixel-input date-picker-custom" onclick="this.showPicker()" readonly style="opacity:0.5;"></div>
+          <div class="field-item" style="grid-column: span 2;">
+            <label class="pixel-label label-light-green">優先級 <span class="required-mark">*</span></label>
+            <select id="input-priority" class="pixel-input" required>
+              <option value="" disabled selected>請選擇...</option>
+              <option value="1_高">高</option>
+              <option value="2_一般">一般</option>
+              <option value="3_低">低</option>
+            </select>
+          </div>
+          <div class="field-item" style="grid-column: span 2;">
+            <label class="pixel-label label-light-green">實際結案日</label>
+            <input type="date" id="input-actual-closed" class="pixel-input date-picker-custom" onclick="this.showPicker()" readonly style="opacity:0.5;">
+          </div>
         </div>
         <div class="field-grid">
-          <div class="field-item"><label class="pixel-label label-light-green">任務描述</label><textarea id="input-description" class="pixel-input scroll" rows="8" style="height: 250px;" required></textarea></div>
+          <div class="field-item">
+            <label class="pixel-label label-light-green">任務描述 <span class="required-mark">*</span></label>
+            <textarea id="input-description" class="pixel-input scroll" rows="8" style="height: 250px;" required></textarea>
+          </div>
           <div class="field-item">
             <label class="pixel-label label-light-green">事項紀錄 <button type="button" class="mini-plus-btn" onclick="addRecordItem()">[+] 新增</button></label>
             <div id="records-container" class="scroll" style="height: 250px; overflow-y: auto; border: 2px solid #285428; padding: 10px; background: rgba(0,0,0,0.3);"></div>
           </div>
         </div>
+
+        <!-- 關鍵詞彙區塊 -->
+        <div class="field-item" id="field-kw-block" style="margin-bottom:15px;">
+          <label class="pixel-label label-light-green">關鍵詞彙 <span class="required-mark">*</span> <span style="font-size:11px; color:#888;">（四大類各選一項）</span></label>
+          <div class="kw-modal-grid" id="kw-modal-grid">
+            <!-- 產業範疇 -->
+            <div class="kw-modal-cat kw-mc-industry">
+              <div class="kw-mc-title">產業範疇</div>
+              <div class="kw-mc-subcats" id="kw-mc-industry-subs"></div>
+              <div class="kw-mc-pool" id="kw-mc-industry-pool"></div>
+            </div>
+            <!-- 系統類別 -->
+            <div class="kw-modal-cat kw-mc-system">
+              <div class="kw-mc-title">系統類別</div>
+              <div class="kw-mc-subcats" id="kw-mc-system-subs"></div>
+              <div class="kw-mc-pool" id="kw-mc-system-pool"></div>
+            </div>
+            <!-- 硬件組成 -->
+            <div class="kw-modal-cat kw-mc-hardware">
+              <div class="kw-mc-title">硬件組成</div>
+              <div class="kw-mc-subcats" id="kw-mc-hardware-subs"></div>
+              <div class="kw-mc-pool" id="kw-mc-hardware-pool"></div>
+            </div>
+            <!-- 技術規範 -->
+            <div class="kw-modal-cat kw-mc-spec">
+              <div class="kw-mc-title">技術規範</div>
+              <div class="kw-mc-subcats" id="kw-mc-spec-subs"></div>
+              <div class="kw-mc-pool" id="kw-mc-spec-pool"></div>
+            </div>
+          </div>
+        </div>
+
         <div class="field-grid-73">
-           <div class="field-item"><label class="pixel-label label-light-green">相關檔案連結</label><div id="link-group"><input type="text" class="pixel-input wide link-entry" placeholder="https://..."></div></div>
-           <div class="field-item"><label class="pixel-label label-light-green">建立者</label><input type="text" id="input-creator" class="pixel-input wide" readonly style="opacity:0.7;"></div>
+          <div class="field-item">
+            <label class="pixel-label label-light-green">相關檔案連結 <button type="button" class="mini-plus-btn" onclick="addLinkItem()">[+] 新增</button></label>
+            <div id="link-group" class="scroll" style="max-height:160px; overflow-y:auto;"></div>
+          </div>
+          <div class="field-item">
+            <label class="pixel-label label-light-green">建立者</label>
+            <input type="text" id="input-creator" class="pixel-input wide" readonly style="opacity:0.7;">
+          </div>
         </div>
         <div class="modal-footer" style="display: flex; justify-content: space-between; width: 100%; margin-top: 15px;">
           <button type="button" id="btn-delete" class="pixel-btn btn-delete-8bit" style="display:none;" onclick="deleteIssue()">[ 刪除紀錄 ]</button>
@@ -254,6 +397,31 @@
       </form>
     </div>
   </div>
+
+  <!-- 事項紀錄子視窗 -->
+  <div id="record-sub-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:2000; justify-content:center; align-items:center;">
+    <div style="width:620px; max-width:95vw; background:#0a0a0a; border:4px solid var(--pixel-green); padding:30px; display:flex; flex-direction:column; gap:15px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #285428; padding-bottom:12px;">
+        <span class="pixel-label label-light-green">[ 事項紀錄編輯 ]</span>
+        <span style="cursor:pointer; color:var(--pixel-green); font-family:var(--main-font); font-size:14px;" onclick="closeRecordSub()">[X]</span>
+      </div>
+      <div>
+        <label class="pixel-label label-light-green" style="display:block; margin-bottom:8px;">標題</label>
+        <input type="text" id="record-sub-title-input" class="pixel-input" style="width:100%; font-size:15px; box-sizing:border-box;" placeholder="輸入事項標題...">
+      </div>
+      <div>
+        <label class="pixel-label label-light-green" style="display:block; margin-bottom:8px;">詳細內容</label>
+        <textarea id="record-sub-text" class="pixel-input scroll" style="width:100%; height:220px; font-size:14px; resize:vertical; box-sizing:border-box;" placeholder="輸入完整詳細內容..."></textarea>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:12px; padding-top:5px;">
+        <button type="button" class="pixel-btn btn-secondary-8bit" onclick="closeRecordSub()">取消</button>
+        <button type="button" class="pixel-btn btn-primary-8bit" onclick="saveRecordSub()">確認儲存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 驗證錯誤提示 -->
+  <div id="validation-toast" style="display:none; position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#ff0055; color:#fff; border:4px solid #fff; padding:15px 30px; z-index:9999; font-family:var(--main-font); font-size:14px; box-shadow:6px 6px 0 #80002b;"></div>
 
   <script src="script.js"></script>
 </body>
