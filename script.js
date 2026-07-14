@@ -77,12 +77,22 @@ function renderSearchableOptions(wrapperId, options) {
 
 function filterSearchableSelect(wrapperId) {
   const input = document.getElementById(`${wrapperId}-input`);
-  const listKey = document.getElementById(`${wrapperId}-dropdown`).dataset.list;
+  const hiddenInput = document.getElementById(`input-${wrapperId.replace('ss-', '')}`);
+  if (hiddenInput) hiddenInput.value = input.value.trim();
+  const dropdown = document.getElementById(`${wrapperId}-dropdown`);
+  const listKey = dropdown.dataset.list;
   if (!listKey || !dataConfig[listKey]) return;
   const query = input.value.toLowerCase();
   const filtered = dataConfig[listKey].filter(opt => opt.toLowerCase().includes(query));
   renderSearchableOptions(wrapperId, filtered);
-  document.getElementById(`${wrapperId}-dropdown`).style.display = 'block';
+  const typed = input.value.trim();
+  const exists = dataConfig[listKey].some(opt => opt.toLowerCase() === typed.toLowerCase());
+  if (typed && !exists) {
+    dropdown.insertAdjacentHTML('beforeend',
+      `<div class="ss-create-option" onclick="selectSearchableOption('${wrapperId}', '${typed.replace(/'/g,"\\'")}', event)">＋ 使用並新增「${typed}」</div>`
+    );
+  }
+  dropdown.style.display = 'block';
 }
 
 function openSearchableSelect(wrapperId) {
@@ -309,6 +319,60 @@ function renderStats() {
                 </div>
               </div>`;
     }).join('') || "無產品數據";
+  }
+}
+
+function normalizeDictValue(value) {
+  return (value || '').toString().trim();
+}
+
+function listHasValue(list, value) {
+  const target = normalizeDictValue(value).toLowerCase();
+  return (list || []).some(item => normalizeDictValue(item).toLowerCase() === target);
+}
+
+function addLocalDictionaryValue(type, value, columnName) {
+  const clean = normalizeDictValue(value);
+  if (!clean) return;
+  if (type === 'keyword') {
+    if (!kwData[columnName]) kwData[columnName] = [];
+    if (!listHasValue(kwData[columnName], clean)) kwData[columnName].push(clean);
+    return;
+  }
+  const configKeyMap = { customer: 'customers', product: 'products', project: 'projects' };
+  const configKey = configKeyMap[type];
+  if (!configKey) return;
+  if (!dataConfig[configKey]) dataConfig[configKey] = [];
+  if (!listHasValue(dataConfig[configKey], clean)) dataConfig[configKey].push(clean);
+}
+
+async function saveDictionaryItem(type, value, columnName = '') {
+  const clean = normalizeDictValue(value);
+  if (!clean) return;
+  await fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify({
+      action: 'addDictionaryItem',
+      type,
+      value: clean,
+      columnName
+    })
+  });
+}
+
+async function saveNewModalDictionaryValues() {
+  const entries = [
+    { type: 'customer', configKey: 'customers', value: document.getElementById('input-customer').value },
+    { type: 'product',  configKey: 'products',  value: document.getElementById('input-product').value },
+    { type: 'project',  configKey: 'projects',  value: document.getElementById('input-project').value }
+  ];
+  for (const item of entries) {
+    const clean = normalizeDictValue(item.value);
+    if (clean && !listHasValue(dataConfig[item.configKey], clean)) {
+      addLocalDictionaryValue(item.type, clean);
+      await saveDictionaryItem(item.type, clean);
+    }
   }
 }
 
@@ -627,7 +691,7 @@ function renderModalKwPool(catKey) {
   const poolEl = document.getElementById(`kw-mc-${catKey}-pool`);
   if (!poolEl || !colName) return;
   const values = (kwData[colName] || []).filter(v => v && v.toString().trim());
-  poolEl.innerHTML = values.map(val => {
+  const tagHtml = values.map(val => {
     const key = `${colName}::${val}`;
     const isSelected = kwModalSelected[catKey] === key;
     return `<div class="kw-mc-tag ${isSelected ? `mc-sel-${catKey}` : ''}"
@@ -635,6 +699,11 @@ function renderModalKwPool(catKey) {
       ${val}
     </div>`;
   }).join('') || '<span style="color:#444; font-size:10px;">（無資料）</span>';
+  poolEl.innerHTML = `${tagHtml}
+    <div class="kw-inline-add" style="width:100%;">
+      <input type="text" class="pixel-input" id="kw-add-${catKey}" placeholder="新增到「${colName}」...">
+      <button type="button" onclick="submitInlineKeyword('${catKey}')">新增</button>
+    </div>`;
 }
 
 function toggleModalKwTag(catKey, colName, val) {
@@ -645,6 +714,34 @@ function toggleModalKwTag(catKey, colName, val) {
     kwModalSelected[catKey] = key;
   }
   renderModalKwPool(catKey);
+}
+
+async function submitInlineKeyword(catKey) {
+  const input = document.getElementById(`kw-add-${catKey}`);
+  const colName = kwModalActiveTab[catKey];
+  if (!input || !colName) return;
+  const clean = normalizeDictValue(input.value);
+  if (!clean) {
+    showToast("請先輸入要新增的關鍵詞彙");
+    return;
+  }
+  if (listHasValue(kwData[colName], clean)) {
+    kwModalSelected[catKey] = `${colName}::${clean}`;
+    renderModalKwPool(catKey);
+    showToast("此標籤已存在，已幫你選取");
+    return;
+  }
+  try {
+    addLocalDictionaryValue('keyword', clean, colName);
+    kwModalSelected[catKey] = `${colName}::${clean}`;
+    renderModalKwPool(catKey);
+    renderKwPool(catKey);
+    input.value = '';
+    await saveDictionaryItem('keyword', clean, colName);
+    showToast("關鍵詞彙已新增並選取");
+  } catch(e) {
+    showToast("新增失敗：請確認 Apps Script 已加入 addDictionaryItem");
+  }
 }
 
 /* ════════════════════════════════════════
@@ -947,6 +1044,7 @@ async function submitIssue() {
   };
   try {
     isMutating = true;
+    await saveNewModalDictionaryValues();
     await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
     isMutating = false;
     alert("同步成功!");
