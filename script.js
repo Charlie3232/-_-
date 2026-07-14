@@ -16,6 +16,7 @@ let selectedKw = { industry: new Set(), system: new Set(), hardware: new Set(), 
 
 // 重工資料庫分頁：各大類當前顯示的小項
 let kwActiveTab = { industry: null, system: null, hardware: null, spec: null };
+let kwBotState = { catKey: null, colName: null };
 
 // Modal 關鍵詞彙：各大類當前選中小項
 let kwModalActiveTab = { industry: null, system: null, hardware: null, spec: null };
@@ -41,10 +42,138 @@ const getToday2026 = () => {
 function showToast(msg, duration = 3000) {
   const toast = document.getElementById('validation-toast');
   toast.textContent = msg;
+  toast.classList.toggle('tag-toast', msg.includes('[ TAG REGISTERED ]'));
   toast.style.display = 'block';
   clearTimeout(toast._timer);
-  toast._timer = setTimeout(() => { toast.style.display = 'none'; }, duration);
+  toast._timer = setTimeout(() => {
+    toast.style.display = 'none';
+    toast.classList.remove('tag-toast');
+  }, duration);
 }
+
+function escapeHtml(value) {
+  return (value || '').toString()
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function getIssueKeywordParts(issue) {
+  return ['kw_industry', 'kw_system', 'kw_hardware', 'kw_spec']
+    .flatMap(field => String(issue[field] || '').split('||'))
+    .map(item => item.trim())
+    .filter(Boolean)
+    .map(item => {
+      const parts = item.split('::');
+      return {
+        column: parts[0] || '',
+        value: parts.slice(1).join('::') || parts[0] || ''
+      };
+    });
+}
+
+function renderIssueKeywordChips(issue) {
+  const parts = getIssueKeywordParts(issue).slice(0, 4);
+  if (!parts.length) return '';
+  return `<div class="issue-kw-chips">${parts.map(p =>
+    `<span class="issue-kw-chip" title="${escapeHtml(p.column)}">${escapeHtml(p.value)}</span>`
+  ).join('')}</div>`;
+}
+
+function renderIssueCategorySummary(issue) {
+  const parts = getIssueKeywordParts(issue);
+  if (!parts.length) return '';
+  const summary = parts.slice(0, 3).map(p => p.value).join(' / ');
+  return `<div class="issue-kw-summary">分類：${escapeHtml(summary)}</div>`;
+}
+
+const DRAFT_KEY = 'issueFormDraftV1';
+
+function isModalOpen() {
+  const overlay = document.getElementById('modal-overlay');
+  return overlay && overlay.style.display === 'flex';
+}
+
+function collectFormDraft() {
+  return {
+    modalType: window.currentModalType || 'TS',
+    issue: document.getElementById('input-issue')?.value || '',
+    owner: document.getElementById('input-owner')?.value || '',
+    status: document.getElementById('input-status')?.value || '',
+    customer: document.getElementById('input-customer')?.value || '',
+    customerText: document.getElementById('ss-customer-input')?.value || '',
+    product: document.getElementById('input-product')?.value || '',
+    productText: document.getElementById('ss-product-input')?.value || '',
+    project: document.getElementById('input-project')?.value || '',
+    projectText: document.getElementById('ss-project-input')?.value || '',
+    deadline: document.getElementById('input-deadline')?.value || '',
+    priority: document.getElementById('input-priority')?.value || '',
+    description: document.getElementById('input-description')?.value || '',
+    links: Array.from(document.querySelectorAll('#link-group .link-entry')).map(el => el.value),
+    records: Array.from(document.querySelectorAll('.record-item-row')).map(row => ({
+      checked: !!row.querySelector('.record-chk')?.checked,
+      title: row.querySelector('.record-title-input')?.value || '',
+      content: row.querySelector('.record-content-input')?.value || ''
+    })),
+    keywords: { ...kwModalSelected },
+    savedAt: Date.now()
+  };
+}
+
+function saveFormDraft() {
+  if (!isModalOpen() || document.getElementById('edit-id')?.value) return;
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(collectFormDraft()));
+}
+
+function clearFormDraft() {
+  localStorage.removeItem(DRAFT_KEY);
+}
+
+function hasDraftContent(draft) {
+  if (!draft) return false;
+  return [
+    draft.issue, draft.customerText, draft.productText, draft.projectText,
+    draft.description, draft.deadline, draft.priority
+  ].some(v => normalizeDictValue(v)) ||
+    (draft.records || []).some(r => normalizeDictValue(r.title) || normalizeDictValue(r.content)) ||
+    (draft.links || []).some(normalizeDictValue) ||
+    Object.values(draft.keywords || {}).some(Boolean);
+}
+
+function tryRestoreFormDraft() {
+  const raw = localStorage.getItem(DRAFT_KEY);
+  if (!raw) return;
+  let draft = null;
+  try { draft = JSON.parse(raw); } catch(e) { clearFormDraft(); return; }
+  if (!hasDraftContent(draft)) return;
+  if (!confirm("偵測到未完成草稿，是否恢復？")) return;
+
+  document.getElementById('input-issue').value = draft.issue || '';
+  document.getElementById('input-owner').value = draft.owner || '';
+  document.getElementById('input-status').value = draft.status || '';
+  loadSearchableSelectValue('ss-customer', draft.customerText || draft.customer || '');
+  loadSearchableSelectValue('ss-product', draft.productText || draft.product || '');
+  loadSearchableSelectValue('ss-project', draft.projectText || draft.project || '');
+  document.getElementById('input-deadline').value = draft.deadline || '';
+  document.getElementById('input-priority').value = draft.priority || '';
+  document.getElementById('input-description').value = draft.description || '';
+
+  document.getElementById('records-container').innerHTML = '';
+  (draft.records || []).forEach(r => addRecordItem(`${r.title || ''}::${r.content || ''}`, !!r.checked));
+  if (!document.querySelector('.record-item-row')) addRecordItem();
+
+  document.getElementById('link-group').innerHTML = '';
+  (draft.links || []).filter(v => v !== undefined).forEach(url => addLinkItem(url));
+  if (!document.querySelector('#link-group .link-entry')) addLinkItem();
+
+  initModalKeywords(draft.keywords || null);
+  showToast("草稿已恢復", 2500);
+}
+
+document.addEventListener('input', saveFormDraft);
+document.addEventListener('change', saveFormDraft);
 
 /* ════════════════════════════════════════
    一般 select 填充
@@ -331,6 +460,26 @@ function listHasValue(list, value) {
   return (list || []).some(item => normalizeDictValue(item).toLowerCase() === target);
 }
 
+function compactCompareValue(value) {
+  return normalizeDictValue(value).toLowerCase().replace(/[\s　_\-\/\\｜|:：,，.。()（）\[\]【】]/g, '');
+}
+
+function findSimilarValue(list, value) {
+  const target = compactCompareValue(value);
+  if (!target || target.length < 2) return '';
+  return (list || []).find(item => {
+    const source = compactCompareValue(item);
+    if (!source || source === target) return false;
+    return source.includes(target) || target.includes(source);
+  }) || '';
+}
+
+function confirmSimilarDictionaryValue(list, value, label) {
+  const similar = findSimilarValue(list, value);
+  if (!similar) return true;
+  return confirm(`資料庫中已有相似${label}：「${similar}」\n仍要新增「${value}」嗎？`);
+}
+
 function addLocalDictionaryValue(type, value, columnName) {
   const clean = normalizeDictValue(value);
   if (!clean) return;
@@ -370,6 +519,9 @@ async function saveNewModalDictionaryValues() {
   for (const item of entries) {
     const clean = normalizeDictValue(item.value);
     if (clean && !listHasValue(dataConfig[item.configKey], clean)) {
+      if (!confirmSimilarDictionaryValue(dataConfig[item.configKey], clean, item.type === 'customer' ? '客戶別' : item.type === 'product' ? '產品別' : '專案別')) {
+        throw new Error('使用者取消新增相似字典項目');
+      }
       addLocalDictionaryValue(item.type, clean);
       await saveDictionaryItem(item.type, clean);
     }
@@ -409,9 +561,11 @@ function renderIssues() {
     const isDone = (stat === "已解決" || stat === "Done");
     const isUrgent = (!isDone && isTaskUrgent(i.deadline, stat));
     return `<div class="pebble ${isDone ? 'resolved-card' : ''} ${isUrgent ? 'urgent-card' : ''}" onclick="openEdit('${i.id}')">
-      <div style="font-size:11px; color:${isUrgent ? '#ff0055' : 'var(--pixel-green)'};">[ ${stat} ]</div>
-      <div style="font-size:20px; margin:10px 0; line-height:1.3;">${i.issue}</div>
-      <div style="font-size:12px; opacity:0.6;">${i.product} | ${i.owner}</div>
+      <div style="font-size:11px; color:${isUrgent ? '#ff0055' : 'var(--pixel-green)'};">[ ${escapeHtml(stat)} ]</div>
+      <div style="font-size:20px; margin:10px 0; line-height:1.3;">${escapeHtml(i.issue)}</div>
+      <div style="font-size:12px; opacity:0.6;">${escapeHtml(i.product)} | ${escapeHtml(i.owner)}</div>
+      ${renderIssueKeywordChips(i)}
+      ${renderIssueCategorySummary(i)}
     </div>`;
   }).join('');
 }
@@ -459,7 +613,10 @@ function switchTab(tabId) {
   document.getElementById('btn-' + tabId).classList.add('active');
   updateHeaderGif(tabId);
   if (tabId === 'tab-main') renderStats();
-  if (tabId === 'tab-keyword') renderKeywordResults();
+  if (tabId === 'tab-keyword') {
+    if (!document.getElementById('kw-bot-cat-options')?.innerHTML) initKwBot();
+    renderKeywordResults();
+  }
 }
 
 function toggleDropdown(id, event) {
@@ -489,6 +646,100 @@ function initKeywordDB() {
     if (catDef.cols.length > 0) setKwTab(catKey, catDef.cols[0]);
   });
   renderSelectedBar();
+  initKwBot();
+}
+
+function initKwBot() {
+  kwBotState = { catKey: null, colName: null };
+  renderKwBotCategories();
+  renderKwBotPath();
+  setKwBotMessage('你好，我是 REWORK-BOT。你想找哪一類重工改善問題？');
+  const subStep = document.getElementById('kw-bot-sub-step');
+  const tagStep = document.getElementById('kw-bot-tag-step');
+  if (subStep) subStep.style.display = 'none';
+  if (tagStep) tagStep.style.display = 'none';
+}
+
+function setKwBotMessage(text) {
+  const el = document.getElementById('kw-bot-message');
+  if (el) el.textContent = text;
+}
+
+function renderKwBotPath() {
+  const el = document.getElementById('kw-bot-path');
+  if (!el) return;
+  const catLabel = kwBotState.catKey ? KW_CATS[kwBotState.catKey].label : '';
+  const colName = kwBotState.colName || '';
+  const selectedTags = kwBotState.catKey
+    ? Array.from(selectedKw[kwBotState.catKey]).map(key => key.split('::')[1])
+    : [];
+  const parts = [catLabel, colName, ...selectedTags].filter(Boolean);
+  el.innerHTML = parts.length
+    ? parts.map(p => `<span>${escapeHtml(p)}</span>`).join('<b>›</b>')
+    : '<span>尚未選擇</span>';
+}
+
+function renderKwBotCategories() {
+  const el = document.getElementById('kw-bot-cat-options');
+  if (!el) return;
+  el.innerHTML = Object.entries(KW_CATS).map(([catKey, catDef]) =>
+    `<button type="button" class="kw-bot-option kw-bot-${catKey} ${kwBotState.catKey === catKey ? 'active' : ''}"
+      onclick="selectKwBotCategory('${catKey}')">${catDef.label}</button>`
+  ).join('');
+}
+
+function selectKwBotCategory(catKey) {
+  kwBotState.catKey = catKey;
+  kwBotState.colName = null;
+  renderKwBotCategories();
+  renderKwBotSubcats(catKey);
+  renderKwBotPath();
+  const subStep = document.getElementById('kw-bot-sub-step');
+  const tagStep = document.getElementById('kw-bot-tag-step');
+  if (subStep) subStep.style.display = 'block';
+  if (tagStep) tagStep.style.display = 'none';
+  setKwBotMessage(`收到。${KW_CATS[catKey].label} 裡面，你想看哪一個中項？`);
+}
+
+function renderKwBotSubcats(catKey) {
+  const el = document.getElementById('kw-bot-sub-options');
+  if (!el) return;
+  el.innerHTML = KW_CATS[catKey].cols.map(col =>
+    `<button type="button" class="kw-bot-option ${kwBotState.colName === col ? 'active' : ''}"
+      onclick="selectKwBotSubcat('${catKey}','${col}')">${col}</button>`
+  ).join('');
+}
+
+function selectKwBotSubcat(catKey, colName) {
+  kwBotState.catKey = catKey;
+  kwBotState.colName = colName;
+  setKwTab(catKey, colName);
+  renderKwBotSubcats(catKey);
+  renderKwBotTags(catKey, colName);
+  renderKwBotPath();
+  const tagStep = document.getElementById('kw-bot-tag-step');
+  if (tagStep) tagStep.style.display = 'block';
+  setKwBotMessage(`好，正在讀取「${colName}」。請選一個或多個小項標籤。`);
+}
+
+function renderKwBotTags(catKey, colName) {
+  const el = document.getElementById('kw-bot-tag-options');
+  if (!el) return;
+  const values = (kwData[colName] || []).filter(v => v && v.toString().trim());
+  el.innerHTML = values.map(val => {
+    const key = `${colName}::${val}`;
+    const isSelected = selectedKw[catKey].has(key);
+    return `<button type="button" class="kw-bot-tag ${isSelected ? 'active' : ''}"
+      onclick="toggleKwBotTag('${catKey}','${colName}','${val.replace(/'/g,"\\'")}')">${escapeHtml(val)}</button>`;
+  }).join('') || '<div class="kw-bot-empty">這個中項目前沒有小項標籤。</div>';
+}
+
+function toggleKwBotTag(catKey, colName, val) {
+  toggleKwTag(catKey, colName, val);
+  renderKwBotTags(catKey, colName);
+  renderKwBotPath();
+  const count = selectedKw[catKey].size;
+  setKwBotMessage(count ? `已選 ${count} 個小項。我幫你把符合的 Issue 放在右邊。` : '小項已取消。你可以再選其他標籤。');
 }
 
 function toggleKwCategory(catKey) {
@@ -588,6 +839,7 @@ function clearAllKeywords() {
   });
   renderSelectedBar();
   renderKeywordResults();
+  initKwBot();
 }
 
 /* ════════════════════════════════════════
@@ -731,6 +983,7 @@ async function submitInlineKeyword(catKey) {
     showToast("此標籤已存在，已幫你選取");
     return;
   }
+  if (!confirmSimilarDictionaryValue(kwData[colName], clean, '關鍵詞彙')) return;
   try {
     addLocalDictionaryValue('keyword', clean, colName);
     kwModalSelected[catKey] = `${colName}::${clean}`;
@@ -738,7 +991,8 @@ async function submitInlineKeyword(catKey) {
     renderKwPool(catKey);
     input.value = '';
     await saveDictionaryItem('keyword', clean, colName);
-    showToast("關鍵詞彙已新增並選取");
+    showToast("[ TAG REGISTERED ]\n標籤已寫入重工資料庫", 3500);
+    saveFormDraft();
   } catch(e) {
     showToast("新增失敗：請確認 Apps Script 已加入 addDictionaryItem");
   }
@@ -823,24 +1077,22 @@ function addRecordItem(text = "", checked = false) {
   const titlePreview = titleVal.trim() !== '' ? titleVal : '（點擊編輯）';
 
   div.innerHTML = `
-    <input type="checkbox" class="record-chk" ${checked ? 'checked' : ''}>
+    <input type="checkbox" class="record-chk" ${checked ? 'checked' : ''} onchange="this.parentElement.querySelector('.record-preview').classList.toggle('record-done', this.checked); saveFormDraft();">
     <input type="hidden" class="record-title-input"   value="${titleVal.replace(/"/g, '&quot;')}">
     <input type="hidden" class="record-content-input" value="${contentVal.replace(/"/g, '&quot;')}">
-    <div class="pixel-input record-preview"
-      style="flex:1; border-width:2px; font-size:14px; cursor:pointer; text-align:left;
-             min-height:42px; display:flex; align-items:center; gap:8px; overflow:hidden;
-             color:${titleVal.trim() ? 'var(--pixel-green)' : '#555'};"
+    <div class="record-node" aria-hidden="true"></div>
+    <div class="pixel-input record-preview ${checked ? 'record-done' : ''}"
       onclick="openRecordSub(this)">
-      <span style="flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">${titlePreview}</span>
-      <span style="font-size:11px; flex-shrink:0; color:${hasContent ? '#aaffaa' : '#444'};">
+      <span class="record-title-text">${escapeHtml(titlePreview)}</span>
+      <span class="record-content-badge" style="color:${hasContent ? '#aaffaa' : '#444'};">
         ${hasContent ? '[有內容]' : '[無內容]'}
       </span>
     </div>
-    <button type="button" class="pixel-btn"
-      style="background:#444; padding:5px 10px; border:none; color:#fff; flex-shrink:0;"
-      onclick="this.parentElement.remove()">X</button>
+    <button type="button" class="pixel-btn record-remove-btn"
+      onclick="this.parentElement.remove(); saveFormDraft();">X</button>
   `;
   container.appendChild(div);
+  saveFormDraft();
 }
 
 let _currentRecordRow = null;
@@ -866,13 +1118,14 @@ function saveRecordSub() {
     _currentRecordRow.querySelector('.record-title-input').value   = newTitle;
     _currentRecordRow.querySelector('.record-content-input').value = newContent;
     const preview    = _currentRecordRow.querySelector('.record-preview');
-    const titleSpan  = preview.querySelector('span:first-child');
-    const badgeSpan  = preview.querySelector('span:last-child');
+    const titleSpan  = preview.querySelector('.record-title-text');
+    const badgeSpan  = preview.querySelector('.record-content-badge');
     const hasContent = newContent.trim() !== '';
     titleSpan.textContent = newTitle.trim() !== '' ? newTitle : '（點擊編輯）';
     badgeSpan.textContent = hasContent ? '[有內容]' : '[無內容]';
     badgeSpan.style.color = hasContent ? '#aaffaa' : '#444';
-    preview.style.color   = newTitle.trim() ? 'var(--pixel-green)' : '#555';
+    preview.classList.toggle('record-empty', !newTitle.trim());
+    saveFormDraft();
   }
   closeRecordSub();
 }
@@ -889,9 +1142,10 @@ function addLinkItem(url = "") {
       value="${url}" placeholder="https://...">
     <button type="button" class="pixel-btn"
       style="background:#444; padding:5px 10px; border:none; color:#fff; flex-shrink:0; cursor:pointer;"
-      onclick="this.parentElement.remove()">X</button>
+      onclick="this.parentElement.remove(); saveFormDraft();">X</button>
   `;
   group.appendChild(div);
+  saveFormDraft();
 }
 
 /* ════════════════════════════════════════
@@ -937,6 +1191,7 @@ function openModal(type) {
   document.getElementById('modal-overlay').style.display = 'flex';
   document.getElementById('submit-btn').innerText = "建立完成";
   document.getElementById('btn-delete').style.display = 'none';
+  tryRestoreFormDraft();
   // 清除驗證錯誤
   document.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
   document.querySelectorAll('.field-error-msg').forEach(el => el.remove());
@@ -1041,11 +1296,15 @@ async function submitIssue() {
     await saveNewModalDictionaryValues();
     await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
     isMutating = false;
+    clearFormDraft();
     alert("同步成功!");
     closeModal();
     await fetchDataOnLoad();
     renderIssues(); renderManagerIssues(); renderStats();
-  } catch(e) { alert("同步失敗"); }
+  } catch(e) {
+    isMutating = false;
+    alert(e.message && e.message.includes('取消新增') ? "已取消同步" : "同步失敗");
+  }
   btn.disabled = false; btn.innerText = "完成";
 }
 
