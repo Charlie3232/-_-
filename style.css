@@ -139,16 +139,17 @@ body { background: var(--bg-color); color: #fff; font-family: var(--main-font); 
   font-family: var(--main-font);
   font-size: 11px;
   padding: 5px 10px;
-  border: 2px solid #333;
-  background: #111;
-  color: #888;
+  border: 2px solid #3e4a6d;
+  background: #07101f;
+  color: #8aa0c8;
   cursor: pointer;
   transition: 0.15s;
 }
-.kw-subcat-tab.active-industry { border-color: var(--kw-industry); color: var(--kw-industry); background: rgba(0,229,255,0.1); }
-.kw-subcat-tab.active-system   { border-color: var(--kw-system);   color: var(--kw-system);   background: rgba(255,235,59,0.1); }
-.kw-subcat-tab.active-hardware { border-color: var(--kw-hardware); color: var(--kw-hardware); background: rgba(118,255,3,0.1); }
-.kw-subcat-tab.active-spec     { border-color: var(--kw-spec);     color: var(--kw-spec);     background: rgba(255,109,0,0.1); }
+.kw-subcat-tab:hover { border-color: #8aa0c8; color: #d6e2ff; }
+.kw-subcat-tab.active-industry { border-color: var(--kw-industry); color: #001014; background: var(--kw-industry); box-shadow: 0 0 10px rgba(0,229,255,0.35); }
+.kw-subcat-tab.active-system   { border-color: var(--kw-system);   color: #171300; background: var(--kw-system);   box-shadow: 0 0 10px rgba(255,235,59,0.35); }
+.kw-subcat-tab.active-hardware { border-color: var(--kw-hardware); color: #071400; background: var(--kw-hardware); box-shadow: 0 0 10px rgba(118,255,3,0.35); }
+.kw-subcat-tab.active-spec     { border-color: var(--kw-spec);     color: #190900; background: var(--kw-spec);     box-shadow: 0 0 10px rgba(255,109,0,0.35); }
 
 /* 關鍵字 tags */
 .kw-tag-pool { display: flex; flex-wrap: wrap; gap: 6px; min-height: 40px; }
@@ -162,11 +163,11 @@ body { background: var(--bg-color); color: #fff; font-family: var(--main-font); 
   cursor: pointer;
   transition: 0.15s;
 }
-.kw-tag:hover { background: #1a2a1a; }
-.kw-tag.selected-industry { border-color: var(--kw-industry); background: rgba(0,229,255,0.15); color: var(--kw-industry); }
-.kw-tag.selected-system   { border-color: var(--kw-system);   background: rgba(255,235,59,0.15); color: var(--kw-system); }
-.kw-tag.selected-hardware { border-color: var(--kw-hardware); background: rgba(118,255,3,0.15); color: var(--kw-hardware); }
-.kw-tag.selected-spec     { border-color: var(--kw-spec);     background: rgba(255,109,0,0.15); color: var(--kw-spec); }
+.kw-tag:hover { background: #1a2a1a; border-color: var(--pixel-light-green); }
+.kw-tag.selected-industry { border-color: #fff; background: rgba(0,229,255,0.28); color: #fff; box-shadow: inset 0 0 0 2px var(--kw-industry), 0 0 10px rgba(0,229,255,0.45); }
+.kw-tag.selected-system   { border-color: #fff; background: rgba(255,235,59,0.28); color: #fff; box-shadow: inset 0 0 0 2px var(--kw-system), 0 0 10px rgba(255,235,59,0.45); }
+.kw-tag.selected-hardware { border-color: #fff; background: rgba(118,255,3,0.28); color: #fff; box-shadow: inset 0 0 0 2px var(--kw-hardware), 0 0 10px rgba(118,255,3,0.45); }
+.kw-tag.selected-spec     { border-color: #fff; background: rgba(255,109,0,0.28); color: #fff; box-shadow: inset 0 0 0 2px var(--kw-spec), 0 0 10px rgba(255,109,0,0.45); }
 
 /* 已選標籤列 */
 .kw-selected-bar {
@@ -268,15 +269,16 @@ body { background: var(--bg-color); color: #fff; font-family: var(--main-font); 
   font-family: var(--main-font);
   font-size: 13px;
   padding: 6px 12px;
-  border: 2px solid #333;
-  background: #111;
-  color: #777;
+  border: 2px solid #3e4a6d;
+  background: #07101f;
+  color: #8aa0c8;
   cursor: pointer;
 }
-.kw-mc-sub-btn.mc-active-industry { border-color: var(--kw-industry); color: var(--kw-industry); background: rgba(0,229,255,0.1); }
-.kw-mc-sub-btn.mc-active-system   { border-color: var(--kw-system);   color: var(--kw-system);   background: rgba(255,235,59,0.1); }
-.kw-mc-sub-btn.mc-active-hardware { border-color: var(--kw-hardware); color: var(--kw-hardware); background: rgba(118,255,3,0.1); }
-.kw-mc-sub-btn.mc-active-spec     { border-color: var(--kw-spec);     color: var(--kw-spec);     background: rgba(255,109,0,0.1); }
+.kw-mc-sub-btn:hover { border-color: #8aa0c8; color: #d6e2ff; }
+.kw-mc-sub-btn.mc-active-industry { border-color: var(--kw-industry); color: #001014; background: var(--kw-industry); box-shadow: 0 0 10px rgba(0,229,255,0.35); }
+.kw-mc-sub-btn.mc-active-system   { border-color: var(--kw-system);   color: #171300; background: var(--kw-system);   box-shadow: 0 0 10px rgba(255,235,59,0.35); }
+.kw-mc-sub-btn.mc-active-hardware { border-color: var(--kw-hardware); color: #071400; background: var(--kw-hardware); box-shadow: 0 0 10px rgba(118,255,3,0.35); }
+.kw-mc-sub-btn.mc-active-spec     { border-color: var(--kw-spec);     color: #190900; background: var(--kw-spec);     box-shadow: 0 0 10px rgba(255,109,0,0.35); }
 
 .kw-mc-pool { display: flex; flex-wrap: wrap; gap: 6px; min-height: 36px; }
 .kw-mc-tag {
@@ -288,11 +290,11 @@ body { background: var(--bg-color); color: #fff; font-family: var(--main-font); 
   color: var(--pixel-light-green);
   cursor: pointer;
 }
-.kw-mc-tag:hover { background: #1a2a1a; }
-.kw-mc-tag.mc-sel-industry { border-color: var(--kw-industry); background: rgba(0,229,255,0.15); color: var(--kw-industry); }
-.kw-mc-tag.mc-sel-system   { border-color: var(--kw-system);   background: rgba(255,235,59,0.15); color: var(--kw-system); }
-.kw-mc-tag.mc-sel-hardware { border-color: var(--kw-hardware); background: rgba(118,255,3,0.15); color: var(--kw-hardware); }
-.kw-mc-tag.mc-sel-spec     { border-color: var(--kw-spec);     background: rgba(255,109,0,0.15); color: var(--kw-spec); }
+.kw-mc-tag:hover { background: #1a2a1a; border-color: var(--pixel-light-green); }
+.kw-mc-tag.mc-sel-industry { border-color: #fff; background: rgba(0,229,255,0.28); color: #fff; box-shadow: inset 0 0 0 2px var(--kw-industry), 0 0 10px rgba(0,229,255,0.45); }
+.kw-mc-tag.mc-sel-system   { border-color: #fff; background: rgba(255,235,59,0.28); color: #fff; box-shadow: inset 0 0 0 2px var(--kw-system), 0 0 10px rgba(255,235,59,0.45); }
+.kw-mc-tag.mc-sel-hardware { border-color: #fff; background: rgba(118,255,3,0.28); color: #fff; box-shadow: inset 0 0 0 2px var(--kw-hardware), 0 0 10px rgba(118,255,3,0.45); }
+.kw-mc-tag.mc-sel-spec     { border-color: #fff; background: rgba(255,109,0,0.28); color: #fff; box-shadow: inset 0 0 0 2px var(--kw-spec), 0 0 10px rgba(255,109,0,0.45); }
 
 /* ════════════════════════════════════════
    主管事務 PPG 背景
