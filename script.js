@@ -16,7 +16,6 @@ let selectedKw = { industry: new Set(), system: new Set(), hardware: new Set(), 
 
 // 重工資料庫分頁：各大類當前顯示的小項
 let kwActiveTab = { industry: null, system: null, hardware: null, spec: null };
-let kwBotState = { catKey: null, colName: null };
 
 // Modal 關鍵詞彙：各大類當前選中小項
 let kwModalActiveTab = { industry: null, system: null, hardware: null, spec: null };
@@ -613,10 +612,7 @@ function switchTab(tabId) {
   document.getElementById('btn-' + tabId).classList.add('active');
   updateHeaderGif(tabId);
   if (tabId === 'tab-main') renderStats();
-  if (tabId === 'tab-keyword') {
-    if (!document.getElementById('kw-bot-cat-options')?.innerHTML) initKwBot();
-    renderKeywordResults();
-  }
+  if (tabId === 'tab-keyword') renderKeywordResults();
 }
 
 function toggleDropdown(id, event) {
@@ -646,100 +642,6 @@ function initKeywordDB() {
     if (catDef.cols.length > 0) setKwTab(catKey, catDef.cols[0]);
   });
   renderSelectedBar();
-  initKwBot();
-}
-
-function initKwBot() {
-  kwBotState = { catKey: null, colName: null };
-  renderKwBotCategories();
-  renderKwBotPath();
-  setKwBotMessage('你好，我是 REWORK-BOT。你想找哪一類重工改善問題？');
-  const subStep = document.getElementById('kw-bot-sub-step');
-  const tagStep = document.getElementById('kw-bot-tag-step');
-  if (subStep) subStep.style.display = 'none';
-  if (tagStep) tagStep.style.display = 'none';
-}
-
-function setKwBotMessage(text) {
-  const el = document.getElementById('kw-bot-message');
-  if (el) el.textContent = text;
-}
-
-function renderKwBotPath() {
-  const el = document.getElementById('kw-bot-path');
-  if (!el) return;
-  const catLabel = kwBotState.catKey ? KW_CATS[kwBotState.catKey].label : '';
-  const colName = kwBotState.colName || '';
-  const selectedTags = kwBotState.catKey
-    ? Array.from(selectedKw[kwBotState.catKey]).map(key => key.split('::')[1])
-    : [];
-  const parts = [catLabel, colName, ...selectedTags].filter(Boolean);
-  el.innerHTML = parts.length
-    ? parts.map(p => `<span>${escapeHtml(p)}</span>`).join('<b>›</b>')
-    : '<span>尚未選擇</span>';
-}
-
-function renderKwBotCategories() {
-  const el = document.getElementById('kw-bot-cat-options');
-  if (!el) return;
-  el.innerHTML = Object.entries(KW_CATS).map(([catKey, catDef]) =>
-    `<button type="button" class="kw-bot-option kw-bot-${catKey} ${kwBotState.catKey === catKey ? 'active' : ''}"
-      onclick="selectKwBotCategory('${catKey}')">${catDef.label}</button>`
-  ).join('');
-}
-
-function selectKwBotCategory(catKey) {
-  kwBotState.catKey = catKey;
-  kwBotState.colName = null;
-  renderKwBotCategories();
-  renderKwBotSubcats(catKey);
-  renderKwBotPath();
-  const subStep = document.getElementById('kw-bot-sub-step');
-  const tagStep = document.getElementById('kw-bot-tag-step');
-  if (subStep) subStep.style.display = 'block';
-  if (tagStep) tagStep.style.display = 'none';
-  setKwBotMessage(`收到。${KW_CATS[catKey].label} 裡面，你想看哪一個中項？`);
-}
-
-function renderKwBotSubcats(catKey) {
-  const el = document.getElementById('kw-bot-sub-options');
-  if (!el) return;
-  el.innerHTML = KW_CATS[catKey].cols.map(col =>
-    `<button type="button" class="kw-bot-option ${kwBotState.colName === col ? 'active' : ''}"
-      onclick="selectKwBotSubcat('${catKey}','${col}')">${col}</button>`
-  ).join('');
-}
-
-function selectKwBotSubcat(catKey, colName) {
-  kwBotState.catKey = catKey;
-  kwBotState.colName = colName;
-  setKwTab(catKey, colName);
-  renderKwBotSubcats(catKey);
-  renderKwBotTags(catKey, colName);
-  renderKwBotPath();
-  const tagStep = document.getElementById('kw-bot-tag-step');
-  if (tagStep) tagStep.style.display = 'block';
-  setKwBotMessage(`好，正在讀取「${colName}」。請選一個或多個小項標籤。`);
-}
-
-function renderKwBotTags(catKey, colName) {
-  const el = document.getElementById('kw-bot-tag-options');
-  if (!el) return;
-  const values = (kwData[colName] || []).filter(v => v && v.toString().trim());
-  el.innerHTML = values.map(val => {
-    const key = `${colName}::${val}`;
-    const isSelected = selectedKw[catKey].has(key);
-    return `<button type="button" class="kw-bot-tag ${isSelected ? 'active' : ''}"
-      onclick="toggleKwBotTag('${catKey}','${colName}','${val.replace(/'/g,"\\'")}')">${escapeHtml(val)}</button>`;
-  }).join('') || '<div class="kw-bot-empty">這個中項目前沒有小項標籤。</div>';
-}
-
-function toggleKwBotTag(catKey, colName, val) {
-  toggleKwTag(catKey, colName, val);
-  renderKwBotTags(catKey, colName);
-  renderKwBotPath();
-  const count = selectedKw[catKey].size;
-  setKwBotMessage(count ? `已選 ${count} 個小項。我幫你把符合的 Issue 放在右邊。` : '小項已取消。你可以再選其他標籤。');
 }
 
 function toggleKwCategory(catKey) {
@@ -839,7 +741,6 @@ function clearAllKeywords() {
   });
   renderSelectedBar();
   renderKeywordResults();
-  initKwBot();
 }
 
 /* ════════════════════════════════════════
