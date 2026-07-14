@@ -197,6 +197,37 @@ body { background: var(--bg-color); color: #fff; font-family: var(--main-font); 
 }
 .kw-clear-btn:hover { background: #ff0055 !important; color: #fff !important; }
 
+.ss-create-option {
+  padding: 10px 14px;
+  font-family: var(--main-font);
+  font-size: 12px;
+  color: #ffeb3b;
+  cursor: pointer;
+  border-top: 1px dashed #285428;
+}
+.ss-create-option:hover { background: #ffeb3b; color: #000; }
+.kw-inline-add {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  align-items: center;
+}
+.kw-inline-add input {
+  font-size: 11px !important;
+  padding: 8px !important;
+}
+.kw-inline-add button {
+  flex: 0 0 auto;
+  background: #111;
+  color: var(--pixel-green);
+  border: 2px solid var(--pixel-green);
+  font-family: var(--main-font);
+  font-size: 11px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.kw-inline-add button:hover { background: var(--pixel-green); color: #000; }
+
 /* 右側結果 */
 .keyword-result-panel { overflow-y: auto; }
 .keyword-result-panel::-webkit-scrollbar { width: 8px; }
