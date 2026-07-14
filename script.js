@@ -785,17 +785,11 @@ function validateForm() {
     }
   });
 
-  // ★ 關鍵詞彙：四大類各至少選一個
-  const kwCatLabels = { industry: '產業範疇', system: '系統類別', hardware: '硬件組成', spec: '技術規範' };
-  const kwMissing = [];
-  Object.entries(kwCatLabels).forEach(([catKey, catLabel]) => {
-    if (!kwModalSelected[catKey]) {
-      kwMissing.push(catLabel);
-    }
-  });
-  if (kwMissing.length > 0) {
+  // ★ 關鍵詞彙：四大類中至少選一個即可
+  const hasAnyKeyword = Object.values(kwModalSelected).some(Boolean);
+  if (!hasAnyKeyword) {
     valid = false;
-    errors.push(`關鍵詞彙（${kwMissing.join('、')}）`);
+    errors.push('關鍵詞彙');
     const kwBlock = document.getElementById('field-kw-block');
     if (kwBlock) {
       kwBlock.classList.add('field-error');
@@ -803,7 +797,7 @@ function validateForm() {
       kwBlock.querySelectorAll('.field-error-msg').forEach(el => el.remove());
       const errMsg = document.createElement('div');
       errMsg.className = 'field-error-msg';
-      errMsg.textContent = `關鍵詞彙必填：${kwMissing.join('、')} 尚未選擇`;
+      errMsg.textContent = '關鍵詞彙必填：四大類中至少選擇一個即可';
       kwBlock.appendChild(errMsg);
     }
   }
