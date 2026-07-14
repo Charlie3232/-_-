@@ -133,7 +133,46 @@
           <div class="keyword-db-layout">
             <!-- 左側：關鍵字池塘 -->
             <div class="keyword-pool-panel pixel-border">
-              <div class="keyword-pool-title">[ 關鍵字資料庫 ]</div>
+              <div class="keyword-pool-title">[ REWORK BOT / 重工改善助手 ]</div>
+
+              <div class="kw-bot-console">
+                <div class="kw-bot-head" aria-hidden="true">
+                  <div class="kw-bot-antenna"></div>
+                  <div class="kw-bot-face">
+                    <span class="kw-bot-eye"></span>
+                    <span class="kw-bot-eye"></span>
+                  </div>
+                </div>
+                <div class="kw-bot-dialog">
+                  <div class="kw-bot-name">REWORK-BOT</div>
+                  <div id="kw-bot-message">你好，我是重工改善助手。你想找什麼類型的問題？</div>
+                </div>
+              </div>
+
+              <div class="kw-bot-path" id="kw-bot-path">
+                <span>尚未選擇</span>
+              </div>
+
+              <div class="kw-bot-step">
+                <div class="kw-bot-step-label">STEP 1 / 選大項</div>
+                <div class="kw-bot-options" id="kw-bot-cat-options"></div>
+              </div>
+
+              <div class="kw-bot-step" id="kw-bot-sub-step" style="display:none;">
+                <div class="kw-bot-step-label">STEP 2 / 選中項</div>
+                <div class="kw-bot-options" id="kw-bot-sub-options"></div>
+              </div>
+
+              <div class="kw-bot-step" id="kw-bot-tag-step" style="display:none;">
+                <div class="kw-bot-step-label">STEP 3 / 選小項</div>
+                <div class="kw-bot-options kw-bot-tag-options" id="kw-bot-tag-options"></div>
+              </div>
+
+              <div class="kw-bot-actions">
+                <button class="pixel-btn kw-clear-btn" onclick="clearAllKeywords()">重新選擇</button>
+              </div>
+
+              <div class="kw-classic-panel" style="display:none;">
 
               <!-- 四大類 -->
               <div class="kw-category" id="kwcat-industry">
@@ -187,6 +226,7 @@
                 <div class="kw-selected-title">已選關鍵字：</div>
                 <div class="kw-selected-tags" id="kw-selected-tags"></div>
                 <button class="pixel-btn kw-clear-btn" onclick="clearAllKeywords()">清除全部</button>
+              </div>
               </div>
 
             </div>
@@ -297,6 +337,7 @@
               <input type="hidden" id="input-customer" required>
               <div class="ss-dropdown pixel-border" id="ss-customer-dropdown" style="display:none;"></div>
             </div>
+            <div class="field-hint">找不到選項？直接輸入新名稱，送出後自動建立。</div>
           </div>
           <div class="field-item">
             <label class="pixel-label label-light-green">產品別 <span class="required-mark">*</span></label>
@@ -305,6 +346,7 @@
               <input type="hidden" id="input-product" required>
               <div class="ss-dropdown pixel-border" id="ss-product-dropdown" style="display:none;"></div>
             </div>
+            <div class="field-hint">找不到選項？直接輸入新名稱，送出後自動建立。</div>
           </div>
         </div>
         <div class="field-grid">
@@ -315,6 +357,7 @@
               <input type="hidden" id="input-project" required>
               <div class="ss-dropdown pixel-border" id="ss-project-dropdown" style="display:none;"></div>
             </div>
+            <div class="field-hint">找不到選項？直接輸入新名稱，送出後自動建立。</div>
           </div>
           <div class="field-item">
             <label class="pixel-label label-light-green">預計完成時間 <span class="required-mark">*</span></label>
@@ -349,7 +392,8 @@
 
         <!-- 關鍵詞彙區塊 -->
         <div class="field-item" id="field-kw-block" style="margin-bottom:15px;">
-          <label class="pixel-label label-light-green">關鍵詞彙 <span class="required-mark">*</span> <span style="font-size:11px; color:#888;">（四大類各選一項）</span></label>
+          <label class="pixel-label label-light-green">關鍵詞彙 <span class="required-mark">*</span> <span style="font-size:11px; color:#888;">（四大類中至少選一個）</span></label>
+          <div class="field-hint">先選中項，再新增小項；新增後會自動選取並寫入重工資料庫。</div>
           <div class="kw-modal-grid" id="kw-modal-grid">
             <!-- 產業範疇 -->
             <div class="kw-modal-cat kw-mc-industry">
