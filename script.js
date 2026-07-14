@@ -1,4 +1,4 @@
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwR7WpnX-GBwkikW0YuPMIwoY0evLu8fDFGaLY-4Af0itgauxOcpl6sjoeHvRLB6e8m/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyG79Hu01QQv2Bieo5yaaydb5TTWDUOWqoi7ieQwP87PvlXef5JhQ-GYAB8Eta7f-0u/exec';
 let allIssues = [];
 let dataConfig = {};
 let isMutating = false;
